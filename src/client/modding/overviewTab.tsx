@@ -16,7 +16,7 @@ import EditorPage from './editorPage';
 import CodeEditor from './codeEditor';
 import PreviewButton from './previewButton';
 
-const FileSaver = require('../../lib/file-saver');
+import { saveAs } from 'file-saver';
 
 const stringifyMod = Reselect.createSelector(
     (mod: Object) => mod,
@@ -270,7 +270,7 @@ class OverviewTab extends React.PureComponent<Props, State> {
         let filename = (currentMod.Mod && currentMod.Mod.name) || "acolytefight.mod";
         filename += ".settings.json";
 
-        FileSaver.saveAs(new Blob([json], {type: "application/json;charset=utf-8"}), filename);
+        saveAs(new Blob([json], {type: "application/json;charset=utf-8"}), filename);
     }
 
     private saveModFile() {
@@ -282,7 +282,7 @@ class OverviewTab extends React.PureComponent<Props, State> {
                 filename += ".json";
             }
 
-            FileSaver.saveAs(new Blob([json], {type: "application/json;charset=utf-8"}), filename);
+            saveAs(new Blob([json], {type: "application/json;charset=utf-8"}), filename);
         }
     }
 

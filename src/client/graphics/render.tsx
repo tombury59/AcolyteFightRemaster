@@ -18,7 +18,8 @@ import { CanvasStack, CanvasCtxStack, RenderOptions } from './render.model';
 import ColTuple from '../../game/colorTuple';
 import { renderIconOnly } from './renderIcon';
 
-export { CanvasStack, RenderOptions, GraphicsLevel } from './render.model';
+export type { CanvasStack, RenderOptions } from './render.model';
+export { GraphicsLevel } from './render.model';
 
 const VectorZero = pl.Vec2(0, 0);
 const MapCenter = pl.Vec2(0.5, 0.5);

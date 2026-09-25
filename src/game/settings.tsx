@@ -7,7 +7,7 @@ import { Sounds } from './sounds';
 import { Actions, SpecialKeys, HomingTargets } from './world.model';
 
 // @ts-ignore
-import Code from '!!raw-loader!./default.ai.js';
+import Code from './default.ai.js?raw';
 
 const lifeSteal = 0.3;
 

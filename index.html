@@ -1,12 +1,14 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8" />
 		<title>Acolyte Fight! - skillshot arena</title>
-		<meta name="description" content="One-minute spellcaster royale. Shoot fireballs, swing your lightsaber, dodge meteors in a fast-paced skill-based one-minute multiplayer arena." />
-		<link rel="apple-touch-icon" sizes="180x180" href="icons/favicon-180.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+		<meta name="description" content="One-minute spellcaster arena. Shoot fireballs, swing your lightsaber, dodge meteors in a fast-paced skill-based arena." />
+		<link rel="apple-touch-icon" sizes="180x180" href="/icons/favicon-180.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
 		<meta name="theme-color" content="#00ccff">
-		<link rel="manifest" href="manifest.webmanifest" />
+		<link rel="manifest" href="/manifest.webmanifest" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="mobile-web-app-capable" content="yes">
@@ -28,145 +30,33 @@
 				from { color: #444 }
 				to { color: #666 }
 			}
-
 		</style>
-		<link href="cdn/fontawesome-pro-5.10.1-web/css/all.css" rel="stylesheet">
+		<link href="/cdn/fontawesome-pro-5.10.1-web/css/all.css" rel="stylesheet">
 		<style>
 			@font-face {
 				font-family: 'ChicagoFLF';
-				src: url("cdn/fonts/ChicagoFLF.ttf") format('truetype');
+				src: url("/cdn/fonts/ChicagoFLF.ttf") format('truetype');
 				font-weight: normal;
 				font-style: normal;
 			}
 			@font-face {
 				font-family: 'Maven Pro';
-				src: url("cdn/fonts/MavenPro-Regular.ttf") format('truetype');
+				src: url("/cdn/fonts/MavenPro-Regular.ttf") format('truetype');
 				font-weight: normal;
 				font-style: normal;
 			}
 			@font-face {
 				font-family: 'Maven Pro';
-				src: url("cdn/fonts/MavenPro-Bold.ttf") format('truetype');
+				src: url("/cdn/fonts/MavenPro-Bold.ttf") format('truetype');
 				font-weight: bold;
 				font-style: normal;
 			}
 		</style>
-
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122657176-1"></script>
-		<script>
-			window.gaTrackingId = 'UA-122657176-1';
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', window.gaTrackingId);
-		</script>
-
-
-		<!-- Facebook Pixel Code -->
-		<script>
-		!function(f,b,e,v,n,t,s)
-		{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-		n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-		if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-		n.queue=[];t=b.createElement(e);t.async=!0;
-		t.src=v;s=b.getElementsByTagName(e)[0];
-		s.parentNode.insertBefore(t,s)}(window, document,'script',
-		'https://connect.facebook.net/en_US/fbevents.js');
-		fbq('init', '262645770932187');
-		fbq('track', 'PageView');
-		</script>
-		<noscript><img height="1" width="1" style="display:none"
-		src="https://www.facebook.com/tr?id=262645770932187&ev=PageView&noscript=1"
-		/></noscript>
-		<!-- End Facebook Pixel Code -->
-
-		<!-- AdInPlay code -->
-		<script>
-			window.aiptag = window.aiptag || { cmd: [] };
-			aiptag.cmd.display = aiptag.cmd.display || []; aiptag.cmd.player = aiptag.cmd.player || [];
-			aiptag.gdprShowConsentTool = false;
-			aiptag.gdprAlternativeConsentTool = true;
-			window.googletag = window.googletag || { cmd: [] };
-			window.googletag.cmd.push(function() {
-				var a = googletag.pubads();
-				a.set('adsense_background_color', '#222');
-				a.set('adsense_border_color', '#000');
-				a.set('adsense_link_color', '#0cf');
-				a.set('adsense_text_color', '#fff');
-				a.set('adsense_url_color', '#0cf');
-			});
-		</script>
-		<script async src="//api.adinplay.com/libs/aiptag/pub/ACF/acolytefight.io/tag.min.js"></script>
-		<!-- End AdInPlay code -->
-
-		<script>
-			function loadScript(src) {
-				return new Promise(function (resolve, reject) {
-					var scriptTag = document.createElement("script");
-					scriptTag.src = src;
-					scriptTag.addEventListener('load', function (ev) {
-						resolve();
-					});
-					scriptTag.addEventListener('error', function () {
-						console.error("Error loading script", src);
-						reject();
-					});
-					document.head.appendChild(scriptTag);
-				});
-			}
-
-			window.acolyteStartup = Promise.resolve();
-
-			if (window.location.pathname === "/poki") {
-				console.log("Attaching poki...");
-				window.acolyteStartup = window.acolyteStartup
-					.then(function() { return loadScript("//game-cdn.poki.com/scripts/v2/poki-sdk.js"); })
-					.then(function() { return PokiSDK.init(); })
-					.then(function() { PokiSDK.gameLoadingStart(); })
-					.then(function() { console.log("Poki attached.") })
-			} else if (window.location.pathname === "/kongregate") {
-				console.log("Attaching kongregate...");
-				window.acolyteStartup = window.acolyteStartup
-					.then(function() { return loadScript("https://cdn1.kongregate.com/javascripts/kongregate_api.js"); })
-					.then(function() { return new Promise(function(resolve) {
-						kongregateAPI.loadAPI(resolve);
-					})})
-					.then(function() { window.kongregate = kongregateAPI.getAPI(); })
-					.then(function() { console.log("Kongregate attached.") })
-			} else if (
-				window.location.pathname === "/fb"
-				|| window.location.host === "localhost:8080"
-				|| /\.fbsbx\.com/.test(window.location.origin)
-				|| /\.facebook\.com/.test(window.location.origin)) {
-
-				console.log("Attaching facebook...");
-				window.acolyteStartup = window.acolyteStartup
-					.then(function() { return loadScript("https://connect.facebook.net/en_US/fbinstant.6.3.js"); })
-					.then(function() { return FBInstant.initializeAsync(); })
-					.then(function() { return FBInstant.setLoadingProgress(0); })
-					.then(function() { console.log("Facebook attached.") })
-			}
-		</script>
 	</head>
 	<body class="game">
 		<div id="root">
 			<div class="loading-splash">Loading...</div>
 		</div>
-		<script>
-			if (window.location.host === "localhost:8080") {
-				window.baseUrl = "https://dev.acolytefight.io:7770";
-			} else if (/\.fbsbx\.com/.test(window.location.origin)
-				|| /\.facebook\.com/.test(window.location.origin)) {
-
-				window.baseUrl = "https://acolytefight.io";
-			} else {
-				// URL is correct already
-			}
-
-			window.acolyteStartup
-				.then(function() { return loadScript((window.baseUrl || "") + "/dist/client.js") })
-				.then(function() { window.acolyteInitialize(); });
-		</script>
+		<script type="module" src="/src/client/index.tsx"></script>
 	</body>
 </html>

@@ -5,7 +5,7 @@ import ColTuple from '../../game/colorTuple';
 import { GraphicsLevel } from '../../game/constants';
 import { AudioElement } from '../audio/audio.model';
 
-export { AudioElement } from '../audio/audio.model';
+export type { AudioElement } from '../audio/audio.model';
 export * from '../../game/character.model';
 export { GraphicsLevel } from '../../game/constants';
 

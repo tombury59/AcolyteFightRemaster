@@ -5,8 +5,8 @@ import * as vector from '../../../game/vector';
 import { Float32List } from '../list';
 import ColTuple from '../../../game/colorTuple';
 
-const plateFragmentShader = require('./plate.fragment.glsl');
-const plateVertexShader = require('./plate.vertex.glsl');
+import plateFragmentShader from './plate.fragment.glsl?raw';
+import plateVertexShader from './plate.vertex.glsl?raw';
 
 const vectorZero = vector.zero();
 const quad = [

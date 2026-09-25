@@ -3,7 +3,7 @@ import * as synth from './synth';
 import * as workerClient from './workerClient';
 import { TicksPerSecond } from '../../game/constants';
 import { AudioElement, SampleRate, Vec2 } from './audio.model';
-export { AudioElement } from './audio.model';
+export type { AudioElement } from './audio.model';
 
 // Constants
 const Z = -0.1;

@@ -5,8 +5,8 @@ import * as vector from '../../../game/vector';
 import { Float32List } from '../list';
 import ColTuple from '../../../game/colorTuple';
 
-const heroesFragmentShader = require('./hero.fragment.glsl');
-const heroesVertexShader = require('./hero.vertex.glsl');
+import heroesFragmentShader from './hero.fragment.glsl?raw';
+import heroesVertexShader from './hero.vertex.glsl?raw';
 
 export function initData(): r.DrawHeroesData {
     return {

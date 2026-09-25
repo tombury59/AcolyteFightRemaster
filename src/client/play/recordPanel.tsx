@@ -27,7 +27,7 @@ import UrlListener from '../controls/urlListener';
 
 import './recordPanel.scss';
 
-const FileSaver = require('../../lib/file-saver');
+import { saveAs } from 'file-saver';
 
 const Size = 1080;
 const AfterSeconds = 2;
@@ -166,7 +166,7 @@ class CanvasPanel extends React.PureComponent<Props, State> {
 
     private download() {
         if (this.state.blob) {
-            FileSaver.saveAs(this.state.blob, `acolytefight-${this.props.recordId}.webm`);
+            saveAs(this.state.blob, `acolytefight-${this.props.recordId}.webm`);
         }
     }
 

@@ -4,10 +4,10 @@ import * as shaders from '../shaders';
 import * as vector from '../../../game/vector';
 import { Float32List } from '../list';
 import ColTuple from '../../../game/colorTuple';
+import fragmentShader from './primitive.fragment.glsl?raw';
+import vertexShader from './primitive.vertex.glsl?raw';
 
 const FeatherFactor = 5; // Render up to this radius to ensure the Gaussian blur reaches close to zero
-const fragmentShader = require('./primitive.fragment.glsl');
-const vertexShader = require('./primitive.vertex.glsl');
 
 const vectorZero = vector.zero();
 

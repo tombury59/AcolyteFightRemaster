@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import * as m from '../shared/messages.model';
@@ -170,13 +170,20 @@ async function onDisconnect() {
     parties.leavePartyAsync(); // Don't await, it'll probably never return
 }
 
+let reactRoot: ReturnType<typeof createRoot> | null = null;
 function render() {
-    ReactDOM.render(
+    if (!reactRoot) {
+        reactRoot = createRoot(document.getElementById("root"));
+    }
+    reactRoot.render(
         <Provider store={StoreProvider.getStore()}>
             <Root />
-        </Provider>,
-        document.getElementById("root"));
+        </Provider>);
 }
 
 (window as any).acolyteInitialize = initialize;
 (window as any).acolyteGo = pages.changePage;
+
+// Auto-start (Vite module entry). The old webpack build called
+// window.acolyteInitialize() from index.html.
+initialize().catch(console.error);

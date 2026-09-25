@@ -12,7 +12,6 @@ import * as StoreProvider from '../storeProvider';
 const DefaultDelayMilliseconds = 400;
 
 const workers = new Map<string, AiWorker>();
-let workerCode: string = null;
 
 export interface SendContext {
     action: (gameId: string, heroId: number, action: w.Action, controlKey: number) => void;
@@ -79,15 +78,6 @@ function isMyBot(world: w.World, heroId: number) {
     }
 }
 
-async function fetchWorkerCode() {
-    if (workerCode) {
-        return workerCode;
-    }
-
-    const res = await fetch(`${url.base}/dist/aiWorker.js`);
-    workerCode = await res.text();
-    return workerCode;
-}
 
 class AiWorker {
     private gameId: string;
@@ -121,9 +111,9 @@ class AiWorker {
     }
 
     private async createWorker() {
-        const code = await fetchWorkerCode();
-        const blobUrl = URL.createObjectURL(new Blob([code]));
-        const worker = new Worker(blobUrl, { credentials: 'omit' });
+        // Vite bundles the worker from its ESM entry (replaces the old
+        // webpack /dist/aiWorker.js fetch + Blob approach).
+        const worker = new Worker(new URL('./worker.tsx', import.meta.url), { type: 'module' });
         worker.onmessage = (ev) => this.onWorkerMessage(ev);
         return worker;
     }
