@@ -1,0 +1,453 @@
+@import './common.scss';
+
+html, body {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: #222222;
+    background-image: linear-gradient(
+        160deg,
+        #222222 0%,
+        #333333 25%,
+        #222222 25%,
+        #333333 75%,
+        #222222 75%,
+        #333333 100%,
+    );
+    background-attachment: fixed;
+
+    font-family: "Maven Pro", "Helvetica", "Arial", sans-serif;
+    font-size: 14pt;
+    color: white;
+
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    @include strokeShadow();
+}
+
+iframe.worker {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    body {
+        font-size: 12pt;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 10pt;
+    }
+}
+
+body.game {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+    margin: 0;
+
+    position: fixed;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow: hidden;
+}
+
+body .page {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 300px;
+}
+
+@media (max-width: 1024px) {
+    body .page {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+}
+
+#root {
+    height: 100%;
+}
+
+.root-panel {
+    height: 100%;
+}
+
+#game-panel {
+    width: 100%;
+    height: 100%;
+}
+
+.customizing #gl {
+    opacity: 0.5;
+}
+
+input {
+    padding: 10px;
+    font-size: 100%;
+    width: 100%;
+}
+
+input.file-selector { width: 300px }
+
+a, a:visited {
+    pointer-events: all;
+    color: #00ccff;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+a:hover, a:active {
+    color: #f80;
+    animation: shine-loop 0.5s alternate infinite linear;
+
+    @include strokeShadow(0 0 8px #f808);
+}
+
+.link-btn, .link-btn:visited {
+    cursor: pointer;
+    pointer-events: all;
+    color: #00ccff;
+    text-decoration: none;
+}
+.link-btn:hover, .link-btn:active {
+    color: #f80;
+    animation: shine-loop 0.5s alternate infinite linear;
+}
+
+.clear {
+    clear: both;
+}
+
+.loading-text {
+    animation: loading-text-animation alternate 2s infinite linear;
+}
+
+@media (max-width: 768px) {
+    .shrink {
+        display: none;
+    }
+}
+
+@keyframes loading-text-animation {
+    from { opacity: 1; }
+    to { opacity: 0.5; }
+}
+
+.btn {
+    --btn-color: #0cf;
+
+    pointer-events: all;
+    display: inline-block;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 0.125em;
+    background-color: var(--btn-color);
+    background-image:
+        linear-gradient(to bottom, #fff4 0%, #fff4 7%, #0000 7%, #0000 93%, #0004 93%, #0004),
+        linear-gradient(
+            145deg,
+            #fff0 0%,
+            #fff4 25%,
+            #fff0 25%,
+            #fff0 45%,
+            #fff4 80%,
+            #fff0 80%,
+            #fff4 100%,
+        );
+    border: 1px black solid;
+    padding: 10px 40px;
+
+    transform: scale(1);
+    transition: transform 0.2s ease;
+
+    @include floatShadow();
+}
+
+.btn:hover {
+    --btn-color: #f80;
+
+    border: 1px #fff4 solid;
+
+    animation: shine-loop 0.5s alternate infinite linear;
+    transform: scale(1.05);
+
+    @include floatShadow(0 0 8px var(--btn-color));
+}
+
+@keyframes shine-loop {
+    from { filter: brightness(1) }
+    to { filter: brightness(1.2) }
+}
+
+.btn:active {
+    box-shadow: none;
+}
+
+.btn-disabled, .btn-disabled:hover, .btn-disabled:active {
+    --btn-color: #888;
+
+    pointer-events: none;
+    background: #888;
+    color: #ccc;
+}
+
+.button-row {
+    padding: 0.5em 0;
+}
+
+.button-row :nth-last-child(n+2) {
+    margin-right: 0.5em;
+}
+
+.clickable {
+    color: #ccc;
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+}
+
+.clickable:hover, .clickable:active, .clickable.selected {
+    color: #eee;
+
+    @include strokeShadow(0 0 8px #fff8);
+}
+
+.clickable:hover {
+    animation: shine-loop 0.5s alternate infinite linear;
+}
+
+.link-icon {
+    color: #ccc;
+    cursor: pointer;
+
+    transition: color 0.2s ease, transform 0.2s ease;
+    transform: scale(1);
+}
+
+.link-icon:hover, .link-icon:active, .link-icon.selected {
+    color: #0cf;
+
+    @include strokeShadow(0 0 8px #0cf8);
+}
+
+.link-icon:hover {
+    transform: scale(1.2);
+    animation: shine-loop 0.5s alternate infinite linear;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.root-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.spacer {
+    flex-grow: 1;
+}
+
+.content-container {
+    flex-grow: 1;
+    max-height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.full-height-page {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-height-page .page-container {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.view-more-ad {
+    text-align: center;
+    font-size: 120%;
+    padding: 20px;
+    margin: 10px;
+}
+
+.login-ad {
+    text-align: center;
+    font-size: 120%;
+    padding: 20px;
+    margin: 10px;
+}
+
+.login-ad .btn {
+    margin: 5px;
+}
+
+
+h1 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-size: 250%;
+}
+
+h2 {
+    margin-top: 1.5em;
+    margin-bottom: 0.1em;
+    font-size: 170%;
+}
+
+h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.1em;
+    font-size: 130%;
+}
+
+.Grandmaster {
+    --rating-color: rgb(0, 255, 255);
+}
+
+.Master {
+    --rating-color: rgb(0, 183, 255);
+}
+
+.Diamond {
+    --rating-color: rgb(0, 102, 255);
+}
+
+.Platinum {
+    --rating-color: rgb(255, 0, 136);
+}
+
+.Gold {
+    --rating-color: rgb(255, 214, 32);
+}
+
+.Silver {
+    --rating-color: rgb(241, 241, 241);
+}
+
+.Bronze {
+    --rating-color: rgb(255, 115, 0);
+}
+
+.Wood {
+    --rating-color: rgb(66, 233, 0);
+}
+
+.rating-card {
+    background: var(--rating-color) linear-gradient(
+        176deg,
+        #0006,
+        #0004 30%,
+        #0006 30%,
+        #0003 85%,
+        #0005 85%,
+        #0004);
+    
+    border: 1px black solid;
+    border-radius: 5px;
+    @include strokeShadow(#0008 0.1em 0.1em 0.1em);
+    @include floatShadow();
+}
+
+.rating-card .rank-icon {
+    box-shadow: rgba(0, 0, 0, 0.5) 0.1em 0.1em 0.1em;
+}
+
+.rating-card:hover {
+    background: var(--rating-color) linear-gradient(
+        176deg,
+        #0005,
+        #0003 30%,
+        #0005 30%,
+        #0002 85%,
+        #0004 85%,
+        #0003);
+    border: 1px #fff4 solid;
+    @include floatShadow(0 0 8px var(--rating-color));
+}
+
+.rating-increase {
+    color: #22ee88;
+}
+
+.rating-decrease {
+    color: #ff4466;
+}
+
+pre {
+    -moz-tab-size : 2;
+      -o-tab-size : 2;
+         tab-size : 2;
+}
+
+textarea {
+    -moz-tab-size : 2;
+      -o-tab-size : 2;
+         tab-size : 2;
+}
+
+@keyframes fly-from-left {
+    from { transform: translateX(-100vw) }
+    to { transform: translateX(0); }
+}
+
+@keyframes fly-from-right {
+    from { transform: translateX(100vw) }
+    to { transform: translateX(0); }
+}
+
+@keyframes fly-from-top {
+    from { transform: translateY(-100vh) }
+    to { transform: translateY(0); }
+}
+
+@keyframes fly-from-bottom {
+    from { transform: translateY(100vh) }
+    to { transform: translateY(0); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
+
+@keyframes flash-in {
+    from { filter: brightness(2) }
+    to { filter: brightness(1) }
+}
+
+.character-build .spell-icon {
+    box-sizing: border-box;
+    box-shadow: 4px 4px 2px #0004;
+    border: 1px #000c solid;
+    filter: brightness(1.0);
+    transition: border 0.2s ease, background-color 0.2s ease, filter 0.2s ease;
+}
+
+.character-build .spell-icon:nth-child(n+2)  {
+    margin-left: 0.5rem;
+}
+
+.character-build .spell-icon:hover {
+    border-color: #fff6;
+    box-shadow: 0 0 4px var(--spell-color);
+    filter: brightness(1.2);
+}

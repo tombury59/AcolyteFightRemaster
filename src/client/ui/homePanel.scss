@@ -1,0 +1,201 @@
+@import '../common.scss';
+
+.home {
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.home .title-row {
+    overflow: hidden;
+    background: black;
+    position: relative;
+    z-index: -100;
+    padding: 0;
+    flex-grow: 10;
+    max-height: 1080px; /* height of video */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+}
+
+.title-mask {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-overlay {
+    mix-blend-mode: screen;
+}
+
+.title-underlay {
+    top: 6px;
+    left: 6px;
+    visibility: hidden;
+}
+
+@supports(mix-blend-mode: color-dodge) {
+    .title-underlay {
+        visibility: visible;
+
+        mix-blend-mode: color-dodge;
+        filter: drop-shadow(0 0 8px #eeec)
+    }
+}
+
+.title-gap {
+    padding-bottom: 1em;
+}
+
+.home .title, .home .subtitle {
+    width: 100%;
+
+    font-weight: bold;
+}
+
+.home .title {
+    font-family: "ChicagoFLF", "Helvetica", sans-serif;
+    font-size: 600%;
+    font-style: italic;
+    letter-spacing: -0.05em;
+    animation: emphasise-flash alternate 0.6s infinite linear;
+    transform: scale(1);
+    color: #eee;
+}
+
+.home .subtitle {
+    color: #eee;
+    font-size: 200%;
+    letter-spacing: 0.2em;
+}
+
+@keyframes emphasise-flash {
+    from { transform: scale(1) }
+    to { transform: scale(1.01) }
+}
+
+@media (max-width: 768px) {
+    .home .title {
+        font-size: 300%;
+    }
+    .home .subtitle {
+        font-size: 120%;
+    }
+}
+
+.title-left, .title-right, .subtitle-left, .subtitle-right {
+    display: inline-block;
+}
+
+.title-left {
+    animation: fly-from-left 0.5s both ease-in;
+}
+
+.title-right {
+    animation: fly-from-right 0.5s both ease-in;
+}
+
+.subtitle-left {
+    animation: fly-from-left 1s both ease-in;
+}
+
+.subtitle-right {
+    animation: fly-from-right 1s both ease-in;
+}
+
+
+
+.home .title-row video {
+    display: block;
+    position: absolute;
+    margin: auto;
+    z-index: -1;
+}
+
+.home .title-row .mask {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, #fab2, #fff1 50%, #fab2);
+    z-index: 100;
+    box-shadow: inset 0 0 10px #0008;
+    mix-blend-mode: lighten;
+}
+
+.home .button-row {
+    flex-shrink: 0;
+    display: flex;
+    margin: 0px auto;
+}
+
+.home .button-row .btn {
+    min-width: 250px;
+}
+.home .primary-button-row .btn {
+    font-size: 285%;
+}
+.home .secondary-button-row .btn {
+    --btn-color: #08b;
+}
+.home .secondary-button-row .btn:hover {
+    --btn-color: #f80;
+}
+.home .btn.disabled {
+    --btn-color: #ccc;
+}
+
+.home .primary-button-row .btn:not(:hover) {
+    border: 1px var(--btn-color) solid;
+    animation: shine-loop 0.7s alternate infinite linear, glow-loop 0.7s alternate infinite linear;
+}
+
+@keyframes glow-loop {
+    from { box-shadow: 0 0 0.1em var(--btn-color) }
+    to {  box-shadow: 0 0 0.2em var(--btn-color) }
+}
+
+@media (max-width: 768px) {
+    .home .btn {
+        min-width: 100px;
+    }
+}
+
+.more-io-games {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    font-size: 75%;
+}
+
+.more-io-games a {
+    display: inline-block;
+    background-color: #4444;
+    padding: 10px 10px;
+    margin-right: 10px;
+
+    transition: background-color 0.2s;
+}
+
+.more-io-games a:hover {
+    color: #fff;
+    background-color: #0cf;
+    box-shadow: 0 0 8px #0cf8;
+}
+
+@media (max-width: 512px) {
+    .more-io-games {
+        display: none;
+    }
+}

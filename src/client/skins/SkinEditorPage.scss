@@ -1,0 +1,18 @@
+.skin-edit-page {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.skin-edit-preview-panel {
+    flex-grow: 1;
+
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+.skin-adjust {
+    flex-basis: 512px;
+}

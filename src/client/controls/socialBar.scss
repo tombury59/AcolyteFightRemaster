@@ -1,0 +1,45 @@
+.social-bar {
+    display: flex;
+}
+
+@media (max-width: 790px) {
+    #game-panel .social-bar {
+        display: none;
+    }
+}
+
+@media (max-width: 512px) {
+    .social-bar {
+        display: none;
+    }
+}
+
+.social-bar {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    mix-blend-mode: luminosity;
+
+    a {
+        font-size: 250%;
+        margin-left: 0.2em;
+
+        transition: transform 0.2s ease;
+        transform: scale(1);
+    }
+
+    a, a:visited {
+        color: #eee;
+        opacity: 0.5;
+    }
+
+    a:hover, a:active {
+        color: #eee;
+        opacity: 1;
+        text-shadow: 0 0 8px #fff8;
+    }
+
+    a:hover {
+        transform: scale(1.2);
+    }
+}

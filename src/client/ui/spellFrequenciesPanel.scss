@@ -1,0 +1,91 @@
+@import '../common.scss';
+
+.spell-frequencies-title {
+    position: relative;
+}
+
+.spell-frequencies-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2em 0;
+
+    border: 1px black solid;
+    border-radius: 5px;
+
+    @include floatShadow();
+}
+
+.spell-frequencies-table th {
+    padding: 0.5em;
+    text-align: left;
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.spell-frequencies-table thead tr {
+    background-color: #fff2;
+}
+
+.spell-frequencies-table tbody tr {
+    background: #fff1;
+}
+
+.spell-frequencies-table tr:hover {
+    background-color: #0cf;
+    box-shadow: 0 0 1em #0cf8;
+    animation: shine-loop 0.5s alternate infinite linear;
+}
+
+.spell-frequencies-table tr:hover .percentage-bar-label {
+    color: #fff;
+}
+
+.spell-frequencies-table td {
+    padding: 0.5em;
+    vertical-align: middle;
+}
+
+.spell-frequencies-col-icon {
+    width: 2em;
+}
+
+.spell-frequencies-col-name {
+    width: 15em;
+}
+
+.spell-frequencies-col-popularity {
+    min-width: 15em;
+}
+
+.spell-frequencies-col-win-rate {
+    min-width: 15em;
+}
+
+.spell-frequencies-icon .spell-icon {
+    border: 1px #fff4 solid;
+    @include floatShadow();
+}
+
+.spell-frequencies-table tr:hover .spell-frequencies-icon .spell-icon {
+    @include floatShadow(0 0 8px var(--spell-color));
+}
+
+.spell-frequencies-name {
+    font-size: 120%;
+}
+
+.spell-frequencies-popularity .percentage-bar {
+    width: 10em;
+}
+
+.spell-frequencies-popularity .percentage-bar-fill {
+    background-color: #2e8;
+}
+
+.spell-frequencies-win-rate .percentage-bar {
+    width: 10em;
+}
+
+.spell-frequencies-win-rate .percentage-bar-fill {
+    background-color: #f0c;
+}

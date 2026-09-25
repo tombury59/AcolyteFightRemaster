@@ -1,0 +1,98 @@
+@import '../common.scss';
+
+.user-stats-panel {
+    position: relative;
+}
+
+.user-stats-panel h1 .rank-icon {
+    margin-right: 0.25em;
+}
+
+.user-stats-panel .character-build {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+@media (max-width: 1024px) {
+    .user-stats-panel .character-build {
+        position: static;
+        text-align: center;
+    }
+}
+
+.points-to-next-league {
+    text-align: center;
+    margin-top: 0.25em;
+    margin-bottom: 1em;
+}
+
+.stats-card-row {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+.stats-card-row .stats-card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    margin: 20px;
+    padding: 25px;
+
+    background: #fff1;
+
+    text-align: center;
+
+    transition: background-color 0.2s ease;
+
+    border: 1px black solid;
+    border-radius: 5px;
+    @include floatShadow();
+}
+
+.stats-card-row .stats-card:hover {
+    background: #fff2;
+}
+
+.stats-card-row .rating-card {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+
+    margin: 20px;
+    padding: 25px;
+
+    font-size: 400%;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+
+    transition: background-color 0.2s ease;
+}
+
+.stats-card-row .rating-card .rank-icon {
+    margin-right: 0.35em;
+}
+
+.stats-card-row .stats-card .label {
+    font-size: 115%;
+}
+
+.stats-card-row .stats-card .value {
+    font-size: 500%;
+    font-weight: bold;
+
+    @include strokeShadow(2px 2px 2px black);
+}
+
+@media (max-width: 768px) {
+    .stats-card-row {
+        flex-wrap: wrap;
+    }
+}

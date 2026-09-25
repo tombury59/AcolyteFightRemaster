@@ -1,0 +1,23 @@
+.banner-ad {
+    display: block;
+    overflow: hidden;
+
+    opacity: 1;
+    animation: fade-in 0.5s ease;
+}
+
+.banner-ad.banner-ad-not-ready {
+    opacity: 0;
+}
+
+.banner-ad.banner-ad-ready {
+    opacity: 1;
+}
+
+.banner-ad.banner-ad-not-ready.banner-hide-until-loaded {
+    display: none;
+}
+
+.banner-ad.banner-ad-ready.banner-hide-until-loaded {
+    display: block;
+}

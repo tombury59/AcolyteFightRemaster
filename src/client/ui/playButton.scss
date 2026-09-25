@@ -1,0 +1,42 @@
+@import '../common.scss';
+
+.btn.waiting-for-party {
+    --btn-color: #555;
+    background: #555;
+    position: relative;
+}
+
+.btn.waiting-for-party:hover {
+    --btn-color: #f048;
+    @include floatShadow(0 0 8px #f048);
+}
+
+.waiting-for-party-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #2e8;
+
+    transition: width 0.2s ease;
+}
+
+.btn.waiting-for-party:hover .waiting-for-party-progress {
+    background: #f04;
+}
+
+.waiting-for-party-label {
+    position: relative; /* So it can appear above the absolute-positioned progress bar */
+}
+
+.btn.auto-join-btn {
+    --btn-color: #2e8;
+    transition: background-color 0.2s ease;
+
+    @include floatShadow(0 0 8px #2e88);
+}
+
+.btn.auto-join-btn:hover {
+    --btn-color: #f04;
+    @include floatShadow(0 0 8px #f048);
+}

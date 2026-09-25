@@ -1,0 +1,53 @@
+@import '../common.scss';
+
+.category-selector {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    @include floatShadow();
+}
+
+.category-selector .category {
+    position: relative;
+
+    display: inline-block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 120%;
+    padding: 10px 20px;
+    background: #fff1;
+
+    border: 1px black solid;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    transform: scale(1);
+}
+
+.category-selector .category:hover {
+    background: #0cf;
+    border: 1px #fff4 solid;
+    color: white;
+    cursor: pointer;
+    animation: shine-loop 0.5s alternate infinite linear;
+    transform: scale(1.2);
+    z-index: 100;
+
+    @include floatShadow(0 0 8px #0cf8);
+}
+
+.category-selector .category-selected {
+    background: #fff3;
+    color: #00ccff;
+}
+
+@media (max-width: 768px) {
+    .category-selector {
+        display: flex;
+        position: static;
+        margin-top: 2em;
+    }
+
+    .category-selector .category {
+        flex-grow: 1;
+    }
+}
