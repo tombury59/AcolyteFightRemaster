@@ -1,9 +1,8 @@
-import msgpackParser from 'socket.io-msgpack-parser';
 import * as m from '../../shared/messages.model';
 import * as w from '../../game/world.model';
 import * as messages from './messages';
-import * as SocketIO from 'socket.io-client';
 import * as StoreProvider from '../storeProvider';
+import { createLocalSocket } from './localServer';
 
 let currentSocket: SocketIOClient.Socket = null;
 
@@ -38,18 +37,9 @@ export function connect(
 	authToken: string): Promise<SocketIOClient.Socket> {
 
 	return new Promise<SocketIOClient.Socket>((resolve, reject) => {
-		const config: SocketIOClient.ConnectOpts = {
-		};
-		(config as any).parser = msgpackParser;
-
-		if (authToken) {
-			config.transportOptions = {
-				polling: {
-					extraHeaders: { [m.AuthHeader]: authToken }
-				},
-			};
-		}
-		const socket = SocketIO.default(socketUrl, config);
+		// Offline solo: use the in-browser local game host instead of a real
+		// socket.io connection. See localServer.tsx.
+		const socket: any = createLocalSocket();
 
 		let alreadyConnected = false;
 		let serverInstanceId: string = null;
