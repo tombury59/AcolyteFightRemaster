@@ -126,6 +126,32 @@ interface PartyMsg {
     waitForPlayers: boolean;
 }
 
+// ----- Presence & chat -----------------------------------------------------
+
+interface OnlinePlayerMsg {
+    userHash: string;
+    name: string;
+    wins: number;
+    damage: number;
+    outlasts: number;
+    kills: number;
+    games: number;
+}
+
+interface TextMsg {
+    userHash: string;
+    name: string;
+    text: string;
+}
+
+interface OnlineMsg {
+    segment: string;
+    all?: OnlinePlayerMsg[];
+    joined?: OnlinePlayerMsg[];
+    left?: string[];
+    texts?: TextMsg[];
+}
+
 export interface RelayConfig {
     maxPlayers: number;
     minBots: number;
@@ -140,6 +166,8 @@ export class Relay {
     private connGame = new Map<string, string>();        // connId -> gameId
 
     private parties = new Map<string, Party>();
+    // Presence: segment (version+room+party) -> connId -> player entry.
+    private segments = new Map<string, Map<string, OnlinePlayerMsg>>();
 
     private gameCounter = 0;
     private universeCounter = 1;
@@ -167,6 +195,7 @@ export class Relay {
     }
 
     removeConn(connId: string) {
+        this.leaveAllSegments(connId);
         this.partyRemoveMember(connId);
         this.leave(connId);
         this.conns.delete(connId);
@@ -761,6 +790,101 @@ export class Relay {
         // The leave queued a control message (and may need a finish tick);
         // make sure the loop runs to process it.
         this.ensureTickLoop();
+    }
+
+    // ----- Presence & chat -------------------------------------------------
+
+    online(conn: Conn, msg: any): void {
+        if (msg?.leave) {
+            this.leaveSegment(conn.id, msg.leave);
+        }
+        if (msg?.join) {
+            this.joinSegment(conn, msg.join);
+        }
+        if (msg?.refresh) {
+            const members = this.segments.get(msg.refresh);
+            conn.send('online', {
+                segment: msg.refresh,
+                all: members ? Array.from(members.values()) : [],
+            } as OnlineMsg);
+        }
+    }
+
+    text(conn: Conn, msg: any): void {
+        const segment: string = msg?.segment;
+        const text: string = (msg?.text || '').slice(0, 240);
+        if (!segment || !text) {
+            return;
+        }
+        const members = this.segments.get(segment);
+        if (!members) {
+            return;
+        }
+        const out: OnlineMsg = {
+            segment,
+            texts: [{ userHash: conn.id, name: msg?.name || this.nameForConn(conn.id), text }],
+        };
+        for (const connId of members.keys()) {
+            this.conns.get(connId)?.send('online', out);
+        }
+    }
+
+    private joinSegment(conn: Conn, segment: string) {
+        let members = this.segments.get(segment);
+        if (!members) {
+            members = new Map();
+            this.segments.set(segment, members);
+        }
+        const player: OnlinePlayerMsg = {
+            userHash: conn.id,
+            name: this.nameForConn(conn.id),
+            wins: 0, damage: 0, outlasts: 0, kills: 0, games: 0,
+        };
+        members.set(conn.id, player);
+
+        // Send the full roster to the newcomer, tell everyone else about them.
+        conn.send('online', { segment, all: Array.from(members.values()) } as OnlineMsg);
+        for (const connId of members.keys()) {
+            if (connId !== conn.id) {
+                this.conns.get(connId)?.send('online', { segment, joined: [player] } as OnlineMsg);
+            }
+        }
+    }
+
+    private leaveSegment(connId: string, segment: string) {
+        const members = this.segments.get(segment);
+        if (!members || !members.has(connId)) {
+            return;
+        }
+        members.delete(connId);
+        if (members.size === 0) {
+            this.segments.delete(segment);
+        }
+        for (const otherId of members.keys()) {
+            this.conns.get(otherId)?.send('online', { segment, left: [connId] } as OnlineMsg);
+        }
+    }
+
+    private leaveAllSegments(connId: string) {
+        for (const segment of Array.from(this.segments.keys())) {
+            this.leaveSegment(connId, segment);
+        }
+    }
+
+    // Best-effort display name for a connection, from its current game or party.
+    private nameForConn(connId: string): string {
+        const game = this.getConnGame(connId);
+        const player = game?.active.get(connId);
+        if (player) {
+            return player.name;
+        }
+        for (const party of this.parties.values()) {
+            const member = party.members.get(connId);
+            if (member) {
+                return member.name;
+            }
+        }
+        return 'Acolyte';
     }
 
     // ----- Tick loop -------------------------------------------------------

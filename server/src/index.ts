@@ -148,6 +148,14 @@ wss.on('connection', (ws: WebSocket) => {
             case 'sync':
                 relay.sync(connId, data);
                 break;
+            case 'online':
+                relay.online(conn, data);
+                ack(ackId, { success: true });
+                break;
+            case 'text':
+                relay.text(conn, data);
+                ack(ackId, { success: true });
+                break;
             case 'party.create':
                 ack(ackId, relay.partyCreate(conn, data));
                 break;

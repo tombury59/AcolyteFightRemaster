@@ -5,14 +5,12 @@ import * as m from '../../shared/messages.model';
 import * as s from '../store.model';
 import * as pages from '../core/pages';
 import * as url from '../url';
-import AccountPanel from '../profiles/accountPanel';
 import ControlsPanel from './controlsPanel';
 import NameConfig from './nameConfig';
 import SpellBtnConfig from './spellConfig';
 
 interface Props {
     current: s.PathElements;
-    loggedIn: boolean;
 }
 interface State {
     category: string;
@@ -21,7 +19,6 @@ interface State {
 function stateToProps(state: s.State): Props {
     return {
         current: state.current,
-        loggedIn: state.loggedIn,
     };
 }
 
@@ -35,20 +32,12 @@ export class SettingsPanel extends React.PureComponent<Props, State> {
 
     render() {
         return <div className="settings-panel">
-            {this.props.loggedIn && <div>
-                <h1>Your Account</h1>
-                <AccountPanel />
-            </div>}
             <h1>Your Name</h1>
             <NameConfig />
             <h1>Your Options</h1>
             <ControlsPanel />
             <SpellBtnConfig />
         </div>
-    }
-
-    private onLoginClick() {
-        window.location.href = "login";
     }
 }
 

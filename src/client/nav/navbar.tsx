@@ -7,7 +7,6 @@ import * as options from '../options';
 import * as pages from '../core/pages';
 import * as rooms from '../core/rooms';
 import * as url from '../url';
-import LoginButton from './loginButton';
 import CustomBar from './customBar';
 import PageLink from './pageLink';
 import RatingControl from './ratingControl';
@@ -54,7 +53,6 @@ class NavBar extends React.PureComponent<Props, State> {
         return <CustomBar>
             <PageLink page=""><i className="fas fa-chevron-left" /><span className="shrink"> Back to</span> Home</PageLink>
             <div className="spacer" />
-            <LoginButton />
         </CustomBar>
     }
 
@@ -67,12 +65,10 @@ class NavBar extends React.PureComponent<Props, State> {
         const horizontal = <>
             {this.props.inParty && <PageLink page="party" badge={this.props.inParty} shrink={true}><i className="fas fa-user-friends" title="Party" /></PageLink>}
             <div className="spacer" />
-            <LoginButton />
         </>;
 
         const vertical = a.noMenu ? null : <>
             <PageLink page=""><i className="icon fas fa-home" /> Home</PageLink>
-            <PageLink page="profile" profileId={this.props.userId}><i className="icon fas fa-video" /> Replays</PageLink>
             {!a.noPartyLink && <PageLink page="party" badge={this.props.inParty}><i className="icon fas fa-user-friends" /> Party</PageLink>}
             <PageLink page="statistics"><i className="icon fas fa-chart-pie" /> Statistics</PageLink>
             <PageLink page="watch"><i className="icon fas fa-eye" /> Spectate</PageLink>

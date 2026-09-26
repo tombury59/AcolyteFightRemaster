@@ -96,15 +96,6 @@ function loadCSS(href: string): Promise<void> {
     });
 }
 
-async function loginAsync() {
-    const userId = await cloud.downloadSettings();
-    if (userId) {
-        StoreProvider.dispatch({ type: "tutorial", tutorialLevel: null }); // This user is not new
-        analytics.setUserId(userId);
-        await parties.updatePartyAsync();
-    }
-}
-
 async function start() {
     const a = options.getProvider();
 
@@ -138,12 +129,6 @@ async function start() {
         }
     } catch(error) {
         console.error(error)
-    }
-
-    try {
-        await loginAsync();
-    } catch (error) {
-        console.error(error);
     }
 
     try {
