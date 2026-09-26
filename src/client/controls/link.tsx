@@ -6,6 +6,7 @@ import * as pages from '../core/pages';
 import * as url from '../url';
 
 interface OwnProps {
+    children?: React.ReactNode;
     page: string;
     profileId?: string;
     onClick?: (ev: React.MouseEvent) => void;

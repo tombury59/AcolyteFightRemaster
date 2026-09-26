@@ -13,6 +13,7 @@ import './performancePanel.scss';
 const HistorySeconds = constants.PerformanceStats.MaxHistoryLengthMilliseconds / 1000;
 
 interface OwnProps {
+    children?: React.ReactNode;
 }
 interface Props extends OwnProps {
     cpuLag: number;

@@ -9,7 +9,7 @@ import * as credentials from './credentials';
 import * as stats from './stats';
 import * as storage from '../storage';
 import * as StoreProvider from '../storeProvider';
-import { base } from '../url';
+import { base, offline } from '../url';
 
 export function onNotification(notifs: w.Notification[]) {
     if (notifs.some(n => n.type === "win")) {
@@ -42,6 +42,8 @@ async function shouldCreate() {
 }
 
 export async function downloadSettings(): Promise<string> {
+    if (offline) { return null; }
+
     const state = StoreProvider.getState();
 
     let create = false;
@@ -104,6 +106,8 @@ export async function downloadSettings(): Promise<string> {
 }
 
 export async function uploadSettings(): Promise<void> {
+    if (offline) { return; }
+
     const state = StoreProvider.getState();
     if (!state.userId) {
         // Can't upload if no user ID
@@ -135,6 +139,8 @@ export async function uploadSettings(): Promise<void> {
 }
 
 export async function fetchGameStats(userId: string, limit: number, until?: moment.Moment): Promise<d.GameStats[]> {
+    if (offline) { return []; }
+
     until = until || moment.unix(0);
 
     const allGameStats = new Array<d.GameStats>();
@@ -191,6 +197,8 @@ export async function downloadGameStats(): Promise<void> {
 }
 
 export async function logout(): Promise<void> {
+    if (offline) { StoreProvider.dispatch({ type: "logout" }); return; }
+
     if (options.getProvider().noLogin) {
         // Don't ever logout of a linked account because that effectively deletes it
         return;

@@ -23,6 +23,7 @@ const DoubleTapPixels = 100;
 const DefaultMaxTouchSurfaceSizeInPixels = 240;
 
 interface Props {
+    children?: React.ReactNode;
     world: w.World;
     customizing: boolean;
     customizingBtn: boolean;
@@ -63,7 +64,7 @@ interface TouchState {
     activeKey?: string;
 }
 
-function stateToProps(state: s.State): Props {
+function stateToProps(state: s.State): Omit<Props, 'children'> {
     return {
         world: state.world,
         customizing: state.customizing,

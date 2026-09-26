@@ -3,6 +3,7 @@ import * as React from 'react';
 import './modalPanel.scss';
 
 interface Props {
+    children?: React.ReactNode;
     className?: string;
     title: React.ReactNode;
     onClose?: () => void;

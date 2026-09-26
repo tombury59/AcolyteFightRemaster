@@ -45,7 +45,7 @@ class FullScreenButton extends React.PureComponent<Props, State> {
     }
 
     render() {
-        if (!(screenfull && screenfull.enabled) || isMobile) {
+        if (!(screenfull && screenfull.isEnabled) || isMobile) {
             // Not supported
             return null;
         }

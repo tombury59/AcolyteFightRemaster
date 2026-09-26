@@ -15,13 +15,14 @@ import CustomBar from '../nav/customBar';
 import HrefItem from '../nav/hrefItem';
 
 interface Props {
+    children?: React.ReactNode;
     connected: boolean;
     exitable: boolean;
 }
 interface State {
 }
 
-function stateToProps(state: s.State): Props {
+function stateToProps(state: s.State): Omit<Props, 'children'> {
     const world = state.world;
     return {
         exitable: matches.worldInterruptible(world),

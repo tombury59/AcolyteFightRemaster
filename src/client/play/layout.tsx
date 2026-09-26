@@ -4,6 +4,7 @@ import * as s from '../store.model';
 import * as w from '../../game/world.model';
 
 export interface OwnProps {
+    children?: React.ReactNode;
     className?: string;
     anchorLeft?: boolean;
     anchorRight?: boolean;

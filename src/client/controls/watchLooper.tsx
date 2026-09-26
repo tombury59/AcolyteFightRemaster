@@ -20,7 +20,7 @@ function stateToProps(state: s.State): Props {
 }
 
 class WatchLooper extends React.PureComponent<Props, State> {
-    private timerHandle: NodeJS.Timer = null;
+    private timerHandle: any = null;
 
     constructor(props: Props) {
         super(props);

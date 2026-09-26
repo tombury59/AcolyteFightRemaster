@@ -64,7 +64,7 @@ function appendPoint(ctxStack: r.CanvasCtxStack, pos: pl.Vec2, texCoord: pl.Vec2
 	++images.numVertices;
 }
 
-export function image(ctxStack: r.CanvasCtxStack, drawRect: ClientRect, texRect: ClientRect) {
+export function image(ctxStack: r.CanvasCtxStack, drawRect: Rect, texRect: Rect) {
     // Top left triangle
     appendPoint(ctxStack, pl.Vec2(drawRect.left, drawRect.top), pl.Vec2(texRect.left, texRect.top));
     appendPoint(ctxStack, pl.Vec2(drawRect.right, drawRect.top), pl.Vec2(texRect.right, texRect.top));

@@ -11,6 +11,8 @@ import * as StoreProvider from '../storeProvider';
 import * as url from '../url';
 
 export async function retrieveSpellFrequencies(category: string, minAco: number) {
+    if (url.offline) { return []; }
+
     const res = await fetch(`${url.base}/api/spellFrequencies?category=${encodeURIComponent(category)}&minAco=${encodeURIComponent(minAco)}`, {
         headers: {
             ...credentials.headers(),

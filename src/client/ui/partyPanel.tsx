@@ -41,7 +41,7 @@ function stateToProps(state: s.State): Props {
     };
 }
 
-function PartyMode(props: { showAll: boolean, selected: boolean, onClick: () => void, children?: React.ReactFragment }) {
+function PartyMode(props: { showAll: boolean, selected: boolean, onClick: () => void, children?: React.ReactNode }) {
     if (!(props.showAll || props.selected)) {
         return null;
     }

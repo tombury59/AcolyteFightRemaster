@@ -15,6 +15,7 @@ import PageLink from '../nav/pageLink';
 import PreviewButton from './previewButton';
 
 interface Props {
+    children?: React.ReactNode;
     codeTree: e.CodeTree;
     currentMod: ModTree;
     errors: e.ErrorTree;

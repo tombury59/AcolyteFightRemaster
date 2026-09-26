@@ -161,7 +161,7 @@ async function start() {
     }
 }
 
-async function onReconnect(socket: SocketIOClient.Socket) {
+async function onReconnect(socket: any) {
     await matches.reconnectToGame();
     online.rejoin();
 }

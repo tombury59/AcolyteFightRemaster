@@ -10,6 +10,7 @@ import CustomBar from '../nav/customBar';
 import HrefItem from '../nav/hrefItem';
 
 interface Props {
+    children?: React.ReactNode;
 }
 
 class RecordBar extends React.PureComponent<Props> {

@@ -6,6 +6,7 @@ import * as StoreProvider from '../../storeProvider';
 import Button from '../../controls/button';
 
 interface OwnProps {
+    children?: React.ReactNode;
     label: string;
     icon: string;
     secondary?: boolean;

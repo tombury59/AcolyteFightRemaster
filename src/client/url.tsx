@@ -4,6 +4,12 @@ import * as s from './store.model';
 export const baseUrl = (window as any).baseUrl;
 export const base = baseUrl || "";
 
+// No backend configured => offline mode (solo vs bots). Network calls to the
+// REST API are skipped. When a server is configured (window.baseUrl set), this
+// becomes false and networking re-enables. See localServer.tsx for the offline
+// game host.
+export const offline = !baseUrl;
+
 export function parseLocation(location: Location): s.PathElements {
     let path: string = null;
     let page: string = null;

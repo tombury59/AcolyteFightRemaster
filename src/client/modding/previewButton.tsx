@@ -7,6 +7,7 @@ import * as s from '../store.model';
 import * as editing from './editing';
 
 interface OwnProps {
+    children?: React.ReactNode;
     layoutId?: string;
 }
 interface Props extends OwnProps {

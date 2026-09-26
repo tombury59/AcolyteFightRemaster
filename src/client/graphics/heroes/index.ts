@@ -90,7 +90,7 @@ function appendPoint(ctxStack: r.CanvasCtxStack, pos: pl.Vec2, angle: number, ex
 	++heroes.numVertices;
 }
 
-export function hero(ctxStack: r.CanvasCtxStack, pos: pl.Vec2, angle: number, drawRadius: number, texRect: ClientRect, fill: r.HeroFill) {
+export function hero(ctxStack: r.CanvasCtxStack, pos: pl.Vec2, angle: number, drawRadius: number, texRect: Rect, fill: r.HeroFill) {
 	// sqrt(2) because the shortest point on the edge of the quad has to fully enclose the radius
 	const extent = Math.sqrt(2) * drawRadius;
 

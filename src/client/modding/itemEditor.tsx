@@ -11,6 +11,7 @@ import CodeEditor from './codeEditor';
 
 interface OwnProps {
     sectionKey: string;
+    children?: React.ReactNode;
 }
 interface Props extends OwnProps {
     codeTree: e.CodeTree;
@@ -19,7 +20,6 @@ interface Props extends OwnProps {
     section: e.CodeSection;
     errors: e.ErrorSection;
     currentMod: ModTree;
-    children?: React.ReactFragment;
 }
 interface State {
 }

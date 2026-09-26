@@ -369,7 +369,7 @@ export interface HexConfig {
 
 export interface AtlasState {
 	instructions: AtlasInstruction[];
-	coords: Map<string, ClientRect>;
+	coords: Map<string, Rect>;
 	height: number;
 	width: number;
 }

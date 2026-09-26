@@ -5,6 +5,7 @@ import EntityList from './entityList';
 import ItemEditor from './itemEditor';
 
 interface Props {
+    children?: React.ReactNode;
     sectionKey: string;
     addRemovePrefix?: string;
 }

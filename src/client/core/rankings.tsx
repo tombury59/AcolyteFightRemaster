@@ -82,7 +82,7 @@ export async function retrieveMyStatsAsync() {
 }
 
 export async function retrieveUserStatsAsync(profileId: string) {
-    if (!profileId) {
+    if (!profileId || url.offline) {
         return null;
     }
 
@@ -117,6 +117,8 @@ async function updateNumGames(profile: m.GetProfileResponse) {
 }
 
 export async function retrieveLeagues(category: string): Promise<m.League[]> {
+    if (url.offline) { return []; }
+
     const res = await fetch(`${url.base}/api/leagues/${encodeURIComponent(category)}`, {
         headers: credentials.headers(),
         credentials: 'same-origin',
@@ -130,6 +132,8 @@ export async function retrieveLeagues(category: string): Promise<m.League[]> {
 }
 
 export async function retrieveLeaderboardAsync(category: string) {
+    if (url.offline) { return []; }
+
     const res = await fetch(`${url.base}/api/leaderboard?category=${encodeURIComponent(category)}`, {
         headers: credentials.headers(),
         credentials: 'same-origin'

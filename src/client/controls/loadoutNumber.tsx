@@ -3,6 +3,7 @@ import * as React from 'react';
 import './loadoutNumber.scss';
 
 interface Props {
+    children?: React.ReactNode;
 }
 
 export default class LoadoutNumber extends React.PureComponent<Props> {

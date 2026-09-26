@@ -9,6 +9,8 @@ import * as StoreProvider from '../storeProvider';
 import * as url from '../url';
 
 export async function checkForReplays(gameStats: d.GameStats[]) {
+    if (url.offline) { return; }
+
     const gamesByServer = _.groupBy(gameStats, (x: d.GameStats) => (x.server || ""));
     for (let server in gamesByServer) {
         try {
@@ -65,6 +67,8 @@ async function listReplays(gameIds: string[], server: string): Promise<string[]>
 }
 
 export async function watch(gameId: string, server: string = null) {
+    if (url.offline) { return; } // No replays offline.
+
     const replay = await getReplay(gameId, server);
     if (replay) {
         const join = replayToJoinMsg(replay);
@@ -94,6 +98,8 @@ export function replayToJoinMsg(replay: m.Replay): m.HeroMsg {
 }
 
 export async function getReplay(gameId: string, server: string = null): Promise<m.Replay> {
+    if (url.offline) { return null; }
+
     let prefix = url.base;
     if (server) {
         const region = regions.getRegion(server);

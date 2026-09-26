@@ -15,7 +15,7 @@ export { circleSolid, lineSolid, arcSolid, convexSolid } from './primitives';
 export { circleTrail, lineTrail, arcTrail, convexTrail } from './primitives';
 export { circlePlate, convexPlate } from './plates';
 
-export function renderGl(ctxStack: r.CanvasCtxStack, worldRect: ClientRect, rect: ClientRect, background: ColTuple) {
+export function renderGl(ctxStack: r.CanvasCtxStack, worldRect: Rect, rect: Rect, background: ColTuple) {
 	let context: r.GlContext = initGl(ctxStack);
 	const gl = context.gl;
 

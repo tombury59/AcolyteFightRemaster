@@ -80,7 +80,7 @@ export function worldPointFromInterfacePoint(interfacePoint: pl.Vec2, world: w.W
 	}
 }
 
-function calculateViewRects(rect: ClientRect, wheelOnRight: boolean): ClientRect {
+function calculateViewRects(rect: Rect, wheelOnRight: boolean): Rect {
 	return {
 		left: 0,
 		right: rect.width,
@@ -91,7 +91,7 @@ function calculateViewRects(rect: ClientRect, wheelOnRight: boolean): ClientRect
 	};
 }
 
-function calculateWorldRect(viewRect: ClientRect, camera: w.Camera): ClientRect {
+function calculateWorldRect(viewRect: Rect, camera: w.Camera): Rect {
 	const size = camera.zoom * Math.min(viewRect.width, viewRect.height);
 
 	const width = size;
@@ -226,7 +226,7 @@ export function render(world: w.World, canvasStack: CanvasStack, options: Render
 	};
 }
 
-function invalidRenderState(world: w.World, rect: ClientRect, options: RenderOptions) {
+function invalidRenderState(world: w.World, rect: Rect, options: RenderOptions) {
 	const buttonBar = world.ui.buttonBar;
 	if (buttonBar) {
 		if (buttonBar.screenHeight !== rect.height || buttonBar.screenWidth !== rect.width || buttonBar.retinaMultiplier !== options.retinaMultiplier) {
@@ -287,7 +287,7 @@ function playSounds(ctxStack: CanvasCtxStack, world: w.World, options: RenderOpt
 	world.ui.playedTick = world.tick; // Always update this so if user unmutes they don't classified as get sound lag
 }
 
-function renderWorld(ctxStack: CanvasCtxStack, world: w.World, worldRect: ClientRect, options: RenderOptions) {
+function renderWorld(ctxStack: CanvasCtxStack, world: w.World, worldRect: Rect, options: RenderOptions) {
 	renderMap(ctxStack, world, options);
 
 	if (options.targetingIndicator) {
@@ -1622,7 +1622,7 @@ function renderHeroCharacter(ctxStack: CanvasCtxStack, hero: w.Hero, pos: pl.Vec
 	const drawRadius = constants.Rendering.HeroAtlasSizeMultiplier * radius;
 
 	// Body
-	const bodyTexRect: ClientRect = atlas.lookup(ctxStack, r.Texture.Images, heroBodyTextureId(hero.id));
+	const bodyTexRect: Rect = atlas.lookup(ctxStack, r.Texture.Images, heroBodyTextureId(hero.id));
 	if (bodyTexRect) {
 		// Shadow
 		if (ctxStack.rtx > r.GraphicsLevel.Low) {
@@ -1642,7 +1642,7 @@ function renderHeroCharacter(ctxStack: CanvasCtxStack, hero: w.Hero, pos: pl.Vec
 		});
 	}
 
-	const glyphTexRect: ClientRect = atlas.lookup(ctxStack, r.Texture.Images, heroGlyphTextureId(hero.id));
+	const glyphTexRect: Rect = atlas.lookup(ctxStack, r.Texture.Images, heroGlyphTextureId(hero.id));
 	if (glyphTexRect) {
 		// Glyph
 		glx.hero(ctxStack, pos, angle, drawRadius, glyphTexRect, {
@@ -1853,7 +1853,7 @@ function renderHeroBars(ctxStack: CanvasCtxStack, hero: w.Hero, pos: pl.Vec2, wo
 function renderHeroName(ctxStack: CanvasCtxStack, hero: w.Hero, pos: pl.Vec2, world: w.World, options: RenderOptions) {
 	const Visuals = world.settings.Visuals;
 
-	const texRect: ClientRect = atlas.lookup(ctxStack, r.Texture.Text, heroNameTextureId(hero.id));
+	const texRect: Rect = atlas.lookup(ctxStack, r.Texture.Text, heroNameTextureId(hero.id));
 	if (!texRect) {
 		return;
 	}
@@ -1862,7 +1862,7 @@ function renderHeroName(ctxStack: CanvasCtxStack, hero: w.Hero, pos: pl.Vec2, wo
 	const yOffset = hero.radius + Visuals.NameMargin;
 	const drawWidth = fontSizeMultiplier * Visuals.NameWidthPixels * ctxStack.pixel;
 	const drawHeight = fontSizeMultiplier * Visuals.NameHeightPixels * ctxStack.pixel;
-	const drawRect: ClientRect = {
+	const drawRect: Rect = {
 		left: pos.x - drawWidth / 2,
 		right: pos.x + drawWidth / 2,
 		width: drawWidth,
@@ -2714,7 +2714,7 @@ function calculateHighlightProportion(highlight: w.TrailHighlight, world: w.Worl
 	return Math.max(0, 1 - ((world.tick - highlight.fromTick) / highlight.maxTicks));
 }
 
-function renderInterface(ctx: CanvasRenderingContext2D, world: w.World, rect: ClientRect, options: RenderOptions) {
+function renderInterface(ctx: CanvasRenderingContext2D, world: w.World, rect: Rect, options: RenderOptions) {
 	ctx.save();
 	ctx.scale(options.retinaMultiplier, options.retinaMultiplier);
 	const myHero = world.objects.get(world.ui.myHeroId) as w.Hero;
@@ -2782,7 +2782,7 @@ export function touchControls(config: w.ButtonConfig): boolean {
 	}
 }
 
-function renderButtons(ctx: CanvasRenderingContext2D, rect: ClientRect, world: w.World, hero: w.Hero, options: RenderOptions) {
+function renderButtons(ctx: CanvasRenderingContext2D, rect: Rect, world: w.World, hero: w.Hero, options: RenderOptions) {
 	let buttonStateLookup: Map<string, w.ButtonRenderState> = null;
 	if (hero) {
 		buttonStateLookup = calculateButtonStatesFromHero(world, hero, options);
@@ -2861,7 +2861,7 @@ function calculateButtonStatesFromKeyBindings(world: w.World, keysToSpells: Map<
 	return buttonStateLookup;
 }
 
-function calculateButtonLayout(keys: KeyConfig[], rect: ClientRect, world: w.World, options: RenderOptions): w.ButtonConfig {
+function calculateButtonLayout(keys: KeyConfig[], rect: Rect, world: w.World, options: RenderOptions): w.ButtonConfig {
 	if (options.mobile) {
 		return calculateButtonWheelLayout(keys, rect, world, options);
 	} else {
@@ -2957,10 +2957,10 @@ function renderButtonWheel(ctx: CanvasRenderingContext2D, config: w.ButtonWheelC
 	}
 }
 
-function calculateButtonBarLayout(keys: KeyConfig[], rect: ClientRect, world: w.World, options: RenderOptions): w.ButtonBarConfig {
+function calculateButtonBarLayout(keys: KeyConfig[], rect: Rect, world: w.World, options: RenderOptions): w.ButtonBarConfig {
 	const Visuals = world.settings.Visuals;
 
-	const hitBoxes = new Map<string, ClientRect>();
+	const hitBoxes = new Map<string, Rect>();
 	let nextOffset = 0;
 	keys.forEach(key => {
 		if (nextOffset > 0) {
@@ -3014,7 +3014,7 @@ function calculateButtonScaleFactor(available: number, actual: number): number {
 	}
 }
 
-function calculateButtonBarRegion(rect: ClientRect, totalSize: number, scaleFactor: number, world: w.World): ClientRect {
+function calculateButtonBarRegion(rect: Rect, totalSize: number, scaleFactor: number, world: w.World): Rect {
 	const Visuals = world.settings.Visuals;
 
 	const axisSize = totalSize * scaleFactor;
@@ -3031,7 +3031,7 @@ function calculateButtonBarRegion(rect: ClientRect, totalSize: number, scaleFact
 	return { left, top, right, bottom, width, height };
 }
 
-function calculateButtonWheelLayout(keys: KeyConfig[], rect: ClientRect, world: w.World, options: RenderOptions): w.ButtonWheelConfig {
+function calculateButtonWheelLayout(keys: KeyConfig[], rect: Rect, world: w.World, options: RenderOptions): w.ButtonWheelConfig {
 	const WheelAngleOffset = (2 * Math.PI) * (1.75 / 6);
 
 	const hitSectors = new Map<string, w.HitSector>();
@@ -3086,7 +3086,7 @@ function invertSector(input: w.HitSector): w.HitSector {
 	};
 }
 
-function calculateButtonWheelRegion(rect: ClientRect, world: w.World, options: RenderOptions): ClientRect {
+function calculateButtonWheelRegion(rect: Rect, world: w.World, options: RenderOptions): Rect {
 	const Visuals = world.settings.Visuals;
 
 	const size = calculateButtonWheelSize(rect, world);
@@ -3109,7 +3109,7 @@ function calculateButtonWheelRegion(rect: ClientRect, world: w.World, options: R
 	return { left, top, right, bottom, width, height };
 }
 
-function calculateButtonWheelSize(rect: ClientRect, world: w.World) {
+function calculateButtonWheelSize(rect: Rect, world: w.World) {
 	const Visuals = world.settings.Visuals;
 
 	const maxSize = Visuals.ButtonBarSize * 3;
@@ -3194,7 +3194,7 @@ function calculateButtonState(key: string, hero: w.Hero, selectedAction: string,
 	return button;
 }
 
-function renderBarButton(ctx: CanvasRenderingContext2D, buttonRegion: ClientRect, buttonState: w.ButtonRenderState, iconLookup: IconLookup) {
+function renderBarButton(ctx: CanvasRenderingContext2D, buttonRegion: Rect, buttonState: w.ButtonRenderState, iconLookup: IconLookup) {
 	const size = buttonRegion.width; // assume square
 	const emphasis = buttonState.emphasis;
 	if (buttonState) {

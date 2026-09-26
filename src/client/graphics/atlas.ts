@@ -76,7 +76,7 @@ function alreadyDrawn(state: r.AtlasState, instructions: r.AtlasInstruction[]): 
     return true;
 }
 
-function renderInstruction(ctxStack: CanvasCtxStack, left: number, top: number, instruction: r.AtlasInstruction): ClientRect {
+function renderInstruction(ctxStack: CanvasCtxStack, left: number, top: number, instruction: r.AtlasInstruction): Rect {
 	const ctx = ctxStack.atlas;
 
     ctx.save();
@@ -141,7 +141,7 @@ function renderHero(ctxStack: CanvasCtxStack, instruction: r.AtlasHeroInstructio
     return instruction;
 }
 
-export function lookup(ctxStack: CanvasCtxStack, texture: r.Texture, textureId: string): ClientRect {
+export function lookup(ctxStack: CanvasCtxStack, texture: r.Texture, textureId: string): Rect {
     const state = textures.getState(ctxStack, texture);
     if (!state) {
         return undefined;

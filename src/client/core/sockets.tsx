@@ -4,7 +4,7 @@ import * as messages from './messages';
 import * as StoreProvider from '../storeProvider';
 import { createLocalSocket } from './localServer';
 
-let currentSocket: SocketIOClient.Socket = null;
+let currentSocket: any = null;
 
 export let listeners: Listeners = {
 	onTickMsg: () => { },
@@ -24,7 +24,7 @@ export interface Listeners {
 	onHeroMsg: (msg: m.HeroMsg) => void;
 	onOnlineMsg: (msg: m.OnlineMsg) => void;
 	onPerformanceMsg: (msg: m.PerformanceStatsMsg) => void;
-	onReconnect: (socket: SocketIOClient.Socket) => void;
+	onReconnect: (socket: any) => void;
 	onDisconnect: () => void;
 }
 
@@ -34,9 +34,9 @@ export function getSocket() {
 
 export function connect(
 	socketUrl: string,
-	authToken: string): Promise<SocketIOClient.Socket> {
+	authToken: string): Promise<any> {
 
-	return new Promise<SocketIOClient.Socket>((resolve, reject) => {
+	return new Promise<any>((resolve, reject) => {
 		// Offline solo: use the in-browser local game host instead of a real
 		// socket.io connection. See localServer.tsx.
 		const socket: any = createLocalSocket();

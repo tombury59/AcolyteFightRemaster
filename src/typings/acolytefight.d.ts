@@ -38,6 +38,18 @@ Graphics level:
 
 */
 
+// Structural rectangle (subset of the deprecated DOM Rect). Used instead
+// of Rect so plain {left,top,right,bottom,width,height} objects and real
+// DOMRects both fit, without the x/y/toJSON members TS5's Rect requires.
+declare interface Rect {
+	left: number;
+	top: number;
+	right: number;
+	bottom: number;
+	width: number;
+	height: number;
+}
+
 declare interface AcolyteFightSettings {
 	Mod: ModSettings;
 	Matchmaking: MatchmakingSettings;

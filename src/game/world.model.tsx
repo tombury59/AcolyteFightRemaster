@@ -161,9 +161,9 @@ export interface Camera {
 }
 
 export interface RenderDimensions {
-	rect: ClientRect;
-	viewRect: ClientRect;
-	worldRect: ClientRect;
+	rect: Rect;
+	viewRect: Rect;
+	worldRect: Rect;
 }
 
 export type ButtonConfig = ButtonBarConfig | ButtonWheelConfig;
@@ -177,18 +177,18 @@ export interface ButtonConfigBase {
 export interface ButtonBarConfig extends ButtonConfigBase {
 	view: "bar";
 
-	region: ClientRect;
+	region: Rect;
 	scaleFactor: number;
 
 	keys: KeyConfig[];
-	hitBoxes: Map<string, ClientRect>;
+	hitBoxes: Map<string, Rect>;
 
 	buttons: Map<string, ButtonRenderState>;
 }
 
 export interface ButtonWheelConfig extends ButtonConfigBase {
 	view: "wheel";
-	region: ClientRect;
+	region: Rect;
 	wheelOnRight: boolean;
 
 	center: pl.Vec2;

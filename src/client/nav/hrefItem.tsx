@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as s from '../store.model';
 
 interface Props {
+    children?: React.ReactNode;
     href?: string;
     className?: string;
     shrink?: boolean;

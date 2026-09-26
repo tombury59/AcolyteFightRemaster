@@ -16,7 +16,7 @@ interface OwnProps {
     error?: boolean;
     onClick?: (ev: React.MouseEvent) => void;
 
-    children?: React.ReactFragment;
+    children?: React.ReactNode;
 }
 interface Props extends OwnProps {
     current: s.PathElements;

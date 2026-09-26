@@ -3,8 +3,8 @@ import * as React from 'react';
 import HrefItem from './hrefItem';
 
 interface Props {
-    vertical?: React.ReactFragment;
-    children?: React.ReactFragment;
+    vertical?: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 interface State {

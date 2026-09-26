@@ -2254,10 +2254,10 @@ function recordSpellChoices(hero: w.Hero, world: w.World, firstAction: w.Action)
 function assignKeyBindingsToHero(hero: w.Hero, keyBindings: KeyBindings, world: w.World) {
 	const resolved = resolveKeyBindings(keyBindings, world.settings);
 
-	const previousSpellIds = wu(hero.keysToSpells.values()).toArray();
+	const previousSpellIds = wu(hero.keysToSpells.values()).toArray() as string[];
 	hero.keysToSpells = resolved.keysToSpells;
 	hero.spellsToKeys = resolved.spellsToKeys;
-	const newSpellIds = wu(hero.keysToSpells.values()).toArray();
+	const newSpellIds = wu(hero.keysToSpells.values()).toArray() as string[];
 
 	// Set some cooldown to make it flash on change
 	const changedSpellIds = _.difference(newSpellIds, previousSpellIds);

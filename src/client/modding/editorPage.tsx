@@ -11,6 +11,7 @@ import TitleListener from '../controls/titleListener';
 import { isLocal } from '../userAgent';
 
 interface OwnProps {
+    children?: React.ReactNode;
     expand?: boolean;
 }
 interface Props extends OwnProps {
