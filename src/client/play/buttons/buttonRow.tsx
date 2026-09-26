@@ -36,12 +36,6 @@ class ButtonRow extends React.PureComponent<Props, State> {
         };
     }
 
-    componentDidUpdate() {
-        if (this.state.hovering && this.props.displayed !== this.props.label) {
-            this.hover();
-        }
-    }
-
     componentWillUnmount() {
         if (this.state.hovering) {
             this.unhover();
@@ -60,19 +54,29 @@ class ButtonRow extends React.PureComponent<Props, State> {
     }
 
     private hover() {
-        this.setState({ hovering: true });
-        StoreProvider.dispatch({
-            type: "updateToolbar",
-            toolbar: { hoverButtonPanel: this.props.label },
-        });
+        if (!this.state.hovering) {
+            this.setState({ hovering: true });
+        }
+        if (this.props.displayed !== this.props.label) {
+            StoreProvider.dispatch({
+                type: "updateToolbar",
+                toolbar: { hoverButtonPanel: this.props.label },
+            });
+        }
     }
 
     private unhover() {
-        this.setState({ hovering: false });
-        StoreProvider.dispatch({
-            type: "updateToolbar",
-            toolbar: { hoverButtonPanel: null },
-        });
+        if (this.state.hovering) {
+            this.setState({ hovering: false });
+        }
+        // Only release the shared toolbar slot if we still own it, so we don't
+        // stomp another row the cursor has already moved onto.
+        if (this.props.displayed === this.props.label) {
+            StoreProvider.dispatch({
+                type: "updateToolbar",
+                toolbar: { hoverButtonPanel: null },
+            });
+        }
     }
 }
 
