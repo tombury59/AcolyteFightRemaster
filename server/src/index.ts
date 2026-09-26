@@ -15,7 +15,7 @@ import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
 import { WebSocketServer, WebSocket } from 'ws';
 import sirv from 'sirv';
-import { Relay, Conn } from './relay.js';
+import { Relay, Conn, fireFrame } from './relay.js';
 import { ClientFrame, DefaultRoomId } from './protocol.js';
 
 const PORT = Number(process.env.PORT || 7770);
@@ -77,7 +77,12 @@ wss.on('connection', (ws: WebSocket) => {
         id: connId,
         send(event: string, ...args: any[]) {
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ t: 'fire', event, args }));
+                ws.send(fireFrame(event, ...args));
+            }
+        },
+        sendRaw(payload: string) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(payload);
             }
         },
     };

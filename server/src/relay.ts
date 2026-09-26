@@ -38,6 +38,14 @@ import {
 export interface Conn {
     id: string;
     send(event: string, ...args: any[]): void;
+    // Send an already-serialized frame. Lets the hot path (tick broadcast)
+    // serialize a tick once and reuse it for every recipient.
+    sendRaw(payload: string): void;
+}
+
+// Builds the wire frame for a pushed event (mirrors index.ts conn.send).
+export function fireFrame(event: string, ...args: any[]): string {
+    return JSON.stringify({ t: 'fire', event, args });
 }
 
 interface Player {
@@ -887,11 +895,14 @@ export class Relay {
 
     private emitTick(game: Game, data: TickMsg) {
         this.metricTicksEmitted++;
+        // Serialize the tick once and reuse it for every recipient instead of
+        // re-stringifying per connection (hot path, 60 Hz).
+        const payload = fireFrame('tick', data);
         for (const connId of game.active.keys()) {
-            this.conns.get(connId)?.send('tick', data);
+            this.conns.get(connId)?.sendRaw(payload);
         }
         for (const connId of game.observers) {
-            this.conns.get(connId)?.send('tick', data);
+            this.conns.get(connId)?.sendRaw(payload);
         }
     }
 
