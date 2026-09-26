@@ -43,6 +43,23 @@ Vérifier l'état du serveur : `curl http://localhost:7770/health`.
 > prend le contrôle (`takeBotControl`), les autres sont ignorés — la simulation
 > reste déterministe.
 
+## Jouer entre amis (parties)
+
+Le serveur implémente les **parties** (events `party.*`) — le vrai mode "entre
+amis", entièrement câblé côté client :
+
+1. Un joueur ouvre **Party** → *Invite friends to party!* : une party est créée,
+   avec un **lien partageable** + **QR code**.
+2. Les amis ouvrent le lien (`…/?party=<id>`) → ils rejoignent la party.
+3. **Modes** : *Open* (jeu immédiat), *Teams* (salle d'attente : tout le monde
+   se déclare **prêt**, choisit son équipe, puis tous sont placés dans **la même
+   partie**), *Tournament* (le leader décide).
+4. Le bouton **Play** devient **Ready** ; quand assez de joueurs sont prêts, le
+   serveur crée une partie commune et applique les équipes.
+
+Les parties sont privées (jamais mélangées au matchmaking public). Pour ajouter
+des bots à une partie de party, configure `MIN_BOTS`/`MAX_BOTS` (défaut 0).
+
 ## Déploiement (Lot D)
 
 - Node ≥ 20. Démarrage : `npm start` (via `tsx`).

@@ -1,5 +1,4 @@
 import moment from 'moment';
-import msgpack from 'msgpack-lite';
 import * as constants from '../../game/constants';
 import * as d from '../stats.model';
 import * as m from '../../shared/messages.model';
@@ -152,7 +151,7 @@ export async function fetchGameStats(userId: string, limit: number, until?: mome
             headers: { ...credentials.headers() },
             credentials: "same-origin",
         });
-        const json: m.GetGameStatsResponse = msgpack.decode(new Uint8Array(await res.arrayBuffer()));
+        const json: m.GetGameStatsResponse = await res.json();
 
         for (const gameStatsMsg of json.stats) {
             const gameStats = stats.messageToGameStats(gameStatsMsg, userId);

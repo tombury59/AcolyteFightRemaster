@@ -13,8 +13,25 @@ export const offline = !baseUrl;
 // when set, friends play online via the relay server (see remoteServer.tsx);
 // when empty, the client uses the solo in-browser loopback (localServer.tsx).
 // Configure at build time with VITE_SERVER_URL, or at runtime via window.serverUrl.
-export const serverUrl: string =
+//
+// Special value "auto": derive the ws URL from the page's own origin. Use this
+// when the relay also serves the front-end (single Docker container) so one
+// build works on any domain — no need to bake the URL in per deployment.
+const rawServerUrl: string =
     (import.meta as any).env?.VITE_SERVER_URL || (window as any).serverUrl || "";
+
+function resolveServerUrl(raw: string): string {
+    if (raw === "auto") {
+        if (typeof window !== "undefined" && window.location) {
+            const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+            return `${proto}//${window.location.host}`;
+        }
+        return "";
+    }
+    return raw;
+}
+
+export const serverUrl: string = resolveServerUrl(rawServerUrl);
 export const online = !!serverUrl;
 
 export function parseLocation(location: Location): s.PathElements {

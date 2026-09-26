@@ -60,7 +60,10 @@ export function connect(
 					reject();
 				} else {
 					serverInstanceId = newInstanceId;
-					StoreProvider.dispatch({ type: "updateServer", server: response.server, region: response.region, socketId: socket.id });
+					// Prefer the server-assigned socket id (used to identify
+					// ourselves among party members); fall back to the local id.
+					const socketId = (response as any).socketId || socket.id;
+					StoreProvider.dispatch({ type: "updateServer", server: response.server, region: response.region, socketId });
 					console.log("Connected to server", response.server, response.region);
 
 					if (alreadyConnected) {

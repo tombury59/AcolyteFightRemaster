@@ -9,8 +9,12 @@
 // ---------------------------------------------------------------------------
 
 import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
 import { WebSocketServer, WebSocket } from 'ws';
+import sirv from 'sirv';
 import { Relay, Conn } from './relay.js';
 import { ClientFrame, DefaultRoomId } from './protocol.js';
 
@@ -18,22 +22,48 @@ const PORT = Number(process.env.PORT || 7770);
 const INSTANCE_ID = process.env.INSTANCE_ID || randomUUID();
 const SERVER_NAME = process.env.SERVER_NAME || 'friends';
 
+// Optionally serve the built front-end from this same process (single Docker
+// container). STATIC_DIR defaults to ../dist relative to this file.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const STATIC_DIR = process.env.STATIC_DIR || path.resolve(__dirname, '../../dist');
+const serveStatic = fs.existsSync(path.join(STATIC_DIR, 'index.html'))
+    ? sirv(STATIC_DIR, { single: true, dev: false, etag: true })
+    : null;
+if (serveStatic) {
+    console.log(`Serving front-end from ${STATIC_DIR}`);
+}
+
 const relay = new Relay({
     maxPlayers: Number(process.env.MAX_PLAYERS || 7),
     minBots: Number(process.env.MIN_BOTS || 0),
     maxBots: Number(process.env.MAX_BOTS || 0),
+    serverName: SERVER_NAME,
 });
 
 // ----- HTTP: health check (used by hosting platforms) ----------------------
 
 const httpServer = http.createServer((req, res) => {
-    if (req.url === '/health' || req.url === '/') {
+    if (req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, instance: INSTANCE_ID, ...relay.stats() }));
-    } else {
-        res.writeHead(404);
-        res.end();
+        return;
     }
+    if (serveStatic) {
+        // Serves dist/ with SPA fallback to index.html for /party, /watch, ...
+        serveStatic(req, res, () => {
+            res.writeHead(404);
+            res.end();
+        });
+        return;
+    }
+    // No front-end bundled: health only.
+    if (req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, instance: INSTANCE_ID, ...relay.stats() }));
+        return;
+    }
+    res.writeHead(404);
+    res.end();
 });
 
 // ----- WebSocket: game relay ----------------------------------------------
@@ -86,7 +116,8 @@ wss.on('connection', (ws: WebSocket) => {
     function route(event: string, data: any, ackId: number | undefined) {
         switch (event) {
             case 'instance':
-                ack(ackId, { success: true, instanceId: INSTANCE_ID, server: SERVER_NAME, region: SERVER_NAME });
+                // socketId lets the client identify itself among party members.
+                ack(ackId, { success: true, instanceId: INSTANCE_ID, server: SERVER_NAME, region: '', socketId: connId });
                 break;
             case 'room':
                 ack(ackId, { success: true, roomId: data?.roomId ?? DefaultRoomId, mod: {} });
@@ -112,12 +143,17 @@ wss.on('connection', (ws: WebSocket) => {
             case 'sync':
                 relay.sync(connId, data);
                 break;
-            // Not available in this friends-only relay: acknowledge and ignore.
-            case 'party':
             case 'party.create':
+                ack(ackId, relay.partyCreate(conn, data));
+                break;
+            case 'party':
+                ack(ackId, relay.partyJoin(conn, data));
+                break;
             case 'party.settings':
+                ack(ackId, relay.partySettings(conn, data));
+                break;
             case 'party.status':
-                ack(ackId, { success: false, error: 'Parties are not available' });
+                ack(ackId, relay.partyStatus(conn, data));
                 break;
             default:
                 ack(ackId, { success: true });

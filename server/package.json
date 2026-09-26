@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "sirv": "^3.0.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

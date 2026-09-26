@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import moment from 'moment';
-import msgpack from 'msgpack-lite';
 import wu from 'wu';
 import * as constants from '../../game/constants';
 import * as credentials from './credentials';
@@ -139,8 +138,7 @@ export async function retrieveLeaderboardAsync(category: string) {
         credentials: 'same-origin'
     });
     if (res.status === 200) {
-        const buffer = new Uint8Array(await res.arrayBuffer());
-        const json = msgpack.decode(buffer) as m.GetLeaderboardResponse;
+        const json = await res.json() as m.GetLeaderboardResponse;
         return json.leaderboard;
     } else {
         throw await res.text();

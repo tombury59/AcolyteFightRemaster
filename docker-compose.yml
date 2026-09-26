@@ -1,0 +1,34 @@
+# Tout le jeu (front + relais multijoueur) + HTTPS, en une commande :
+#   docker compose up -d --build
+# 1) Mets ton domaine dans le Caddyfile.  2) Pointe le DNS vers le VPS.
+services:
+  acolyte:
+    build:
+      context: .
+      args:
+        # "auto" = l'URL WebSocket est deduite de l'origine de la page.
+        VITE_SERVER_URL: auto
+    environment:
+      - PORT=7770
+      - MIN_BOTS=0
+      - MAX_BOTS=0
+    expose:
+      - "7770"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - acolyte
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

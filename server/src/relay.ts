@@ -18,6 +18,7 @@
 import {
     ActionMsg,
     ControlMsg,
+    DefaultRoomId,
     HeroMsg,
     JoinMsg,
     Matchmaking,
@@ -45,6 +46,7 @@ interface Player {
     controlKey: number;
     name: string;
     numGames: number;
+    team: number | null;
 }
 
 interface Game {
@@ -74,10 +76,53 @@ interface Room {
     mod: object;
 }
 
+// ----- Parties (play with friends) -----------------------------------------
+
+interface PartyMember {
+    connId: string;
+    name: string;
+    keyBindings: any;
+    isMobile: boolean;
+    numGames: number;
+    ready: boolean;
+    isObserver: boolean;
+    isLeader: boolean;
+    team: number | null;
+}
+
+interface Party {
+    id: string;
+    roomId: string;
+    waitForPlayers: boolean;
+    isLocked: boolean;
+    initialObserver: boolean;
+    members: Map<string, PartyMember>; // connId -> member
+}
+
+// Wire shapes (mirror src/shared/messages.model.tsx).
+interface PartyMemberMsg {
+    socketId: string;
+    name: string;
+    ready: boolean;
+    isObserver: boolean;
+    isLeader: boolean;
+    team: number | null;
+}
+
+interface PartyMsg {
+    partyId: string;
+    roomId: string;
+    members: PartyMemberMsg[];
+    isLocked: boolean;
+    initialObserver: boolean;
+    waitForPlayers: boolean;
+}
+
 export interface RelayConfig {
     maxPlayers: number;
     minBots: number;
     maxBots: number;
+    serverName: string;
 }
 
 export class Relay {
@@ -86,9 +131,12 @@ export class Relay {
     private joinableByRoom = new Map<string, string>(); // roomId -> gameId
     private connGame = new Map<string, string>();        // connId -> gameId
 
+    private parties = new Map<string, Party>();
+
     private gameCounter = 0;
     private universeCounter = 1;
     private controlKeyCounter = 1;
+    private partyCounter = 0;
 
     private tickHandle: ReturnType<typeof setInterval> | null = null;
     private conns = new Map<string, Conn>();
@@ -98,7 +146,11 @@ export class Relay {
     private metricActionsAccepted = 0;
     private metricTicksEmitted = 0;
 
-    constructor(private config: RelayConfig) {}
+    private serverName: string;
+
+    constructor(private config: RelayConfig) {
+        this.serverName = config.serverName;
+    }
 
     // ----- Connection lifecycle --------------------------------------------
 
@@ -107,6 +159,7 @@ export class Relay {
     }
 
     removeConn(connId: string) {
+        this.partyRemoveMember(connId);
         this.leave(connId);
         this.conns.delete(connId);
     }
@@ -140,17 +193,37 @@ export class Relay {
             game = this.createGame(room, locked);
         }
 
+        this.addPlayerToGame(conn, game, msg, observe);
+
+        // Fill bots: honour an explicit request, and optionally a configured
+        // minimum so a lone player still has an opponent.
+        if (!observe) {
+            this.fillBots(game, msg?.numBots || 0);
+        }
+
+        this.ensureTickLoop();
+    }
+
+    // Adds one connection to a specific game (used by matchmaking join and by
+    // party start). Returns the assigned heroId, or null for an observer.
+    private addPlayerToGame(
+        conn: Conn,
+        game: Game,
+        msg: JoinMsg,
+        observe: boolean,
+        team: number | null = null,
+    ): number | null {
         this.connGame.set(conn.id, game.id);
 
         if (observe) {
             game.observers.add(conn.id);
             this.sendHero(conn, game, null, null, null, msg, true);
-            return;
+            return null;
         }
 
         // Reconnect to an existing hero if the key matches.
-        let heroId: number | null = null;
-        let controlKey: number | null = null;
+        let heroId: number;
+        let controlKey: number;
         const reconnectKey = msg?.reconnectKey;
         if (reconnectKey && game.reconnectKeys.has(reconnectKey)) {
             heroId = game.reconnectKeys.get(reconnectKey)!;
@@ -179,15 +252,11 @@ export class Relay {
             controlKey,
             name: msg?.name || 'Acolyte',
             numGames: msg?.numGames || 0,
+            team,
         });
 
-        // Fill bots: honour an explicit request, and optionally a configured
-        // minimum so a lone player still has an opponent.
-        this.fillBots(game, msg?.numBots || 0);
-
         this.sendHero(conn, game, heroId, controlKey, newReconnectKey, msg, true);
-
-        this.ensureTickLoop();
+        return heroId;
     }
 
     private findJoinableGame(roomId: string, msg: JoinMsg): Game | null {
@@ -369,6 +438,278 @@ export class Relay {
     sync(_connId: string, _data: any): void {
         // With a single authoritative history there is nothing to reconcile;
         // clients replay the same ticks. Sync is a no-op relay-side.
+    }
+
+    // ----- Parties ---------------------------------------------------------
+
+    partyCreate(conn: Conn, req: any): any {
+        const roomId = req?.roomId || DefaultRoomId;
+        const party: Party = {
+            id: 'p' + this.partyCounter++ + '-' + Math.random().toString(36).slice(2, 8),
+            roomId,
+            waitForPlayers: true,
+            isLocked: false,
+            initialObserver: false,
+            members: new Map(),
+        };
+        this.parties.set(party.id, party);
+        this.partyUpsertMember(party, conn.id, req);
+        const member = party.members.get(conn.id);
+        if (member) {
+            member.isLeader = true;
+        }
+        return { success: true, partyId: party.id, roomId: party.roomId, server: this.serverName };
+    }
+
+    partyJoin(conn: Conn, req: any): any {
+        const party = this.parties.get(req?.partyId);
+        if (!party) {
+            return { success: false, error: `Party ${req?.partyId} not found` };
+        }
+        if (req?.joining) {
+            this.partyUpsertMember(party, conn.id, req);
+        } else if (!party.members.has(conn.id)) {
+            return { success: false, error: `Cannot update ${req.partyId} as you are not a party member` };
+        } else {
+            this.partyUpsertMember(party, conn.id, req);
+        }
+        const msg = this.partyToMsg(party);
+        this.emitParty(party);
+        return { success: true, ...msg, server: this.serverName, region: '' };
+    }
+
+    partySettings(conn: Conn, req: any): any {
+        const party = this.parties.get(req?.partyId);
+        if (!party || !this.isPartyLeader(party, conn.id)) {
+            return { success: false, error: `Party ${req?.partyId} not found or inaccessible` };
+        }
+        if (req.roomId !== undefined) { party.roomId = req.roomId || DefaultRoomId; }
+        if (req.isLocked !== undefined) { party.isLocked = req.isLocked; }
+        if (req.waitForPlayers !== undefined) { party.waitForPlayers = req.waitForPlayers; }
+        if (req.initialObserver !== undefined) { party.initialObserver = req.initialObserver; }
+        this.emitParty(party);
+        return { success: true, partyId: party.id, roomId: party.roomId, waitForPlayers: party.waitForPlayers };
+    }
+
+    partyStatus(conn: Conn, req: any): any {
+        const party = this.parties.get(req?.partyId);
+        if (!party) {
+            return { success: false, error: `Party ${req?.partyId} not found` };
+        }
+        const memberId = req.memberId || conn.id;
+        const newStatus: Partial<PartyMember> = {};
+        if (req.isLeader !== undefined) { newStatus.isLeader = req.isLeader; }
+        if (req.isObserver !== undefined) { newStatus.isObserver = req.isObserver; }
+        if (req.isReady !== undefined) { newStatus.ready = req.isReady; }
+        if (req.team !== undefined) { newStatus.team = req.team; }
+
+        if (!this.isAuthorizedToChange(party, conn.id, memberId, req)) {
+            return { success: false, error: `Party ${req.partyId} unauthorized` };
+        }
+
+        this.partyUpdateMemberStatus(party, memberId, newStatus);
+        if (req.kick) {
+            this.partyDeleteMember(party, memberId);
+        }
+
+        this.emitParty(party);
+        this.startPartyIfReady(party);
+        return { success: true };
+    }
+
+    private partyUpsertMember(party: Party, connId: string, req: any) {
+        const existing = party.members.get(connId);
+        if (existing) {
+            existing.name = req?.playerName ?? existing.name;
+            existing.keyBindings = req?.keyBindings ?? existing.keyBindings;
+            existing.isMobile = req?.isMobile ?? existing.isMobile;
+            existing.numGames = req?.numGames ?? existing.numGames;
+        } else {
+            party.members.set(connId, {
+                connId,
+                name: req?.playerName || 'Acolyte',
+                keyBindings: req?.keyBindings || {},
+                isMobile: req?.isMobile || false,
+                numGames: req?.numGames || 0,
+                ready: false,
+                isObserver: party.initialObserver,
+                isLeader: false,
+                team: null,
+            });
+        }
+    }
+
+    private partyUpdateMemberStatus(party: Party, connId: string, status: Partial<PartyMember>) {
+        const member = party.members.get(connId);
+        if (!member) {
+            return;
+        }
+        // Switching an observer back to playing requires them to re-ready.
+        if (status.isObserver !== undefined && status.isObserver !== member.isObserver) {
+            status.ready = false;
+        }
+        Object.assign(member, status);
+    }
+
+    private partyDeleteMember(party: Party, connId: string) {
+        party.members.delete(connId);
+        if (party.members.size === 0) {
+            this.parties.delete(party.id);
+        }
+    }
+
+    partyRemoveMember(connId: string) {
+        for (const party of this.parties.values()) {
+            if (party.members.has(connId)) {
+                this.partyDeleteMember(party, connId);
+                if (this.parties.has(party.id)) {
+                    this.emitParty(party);
+                }
+            }
+        }
+    }
+
+    private isPartyLeader(party: Party, connId: string): boolean {
+        const m = party.members.get(connId);
+        return !!m && m.isLeader;
+    }
+
+    private isAuthorizedToChange(party: Party, initiatorId: string, memberId: string, req: any): boolean {
+        const initiator = party.members.get(initiatorId);
+        const isLeader = !!initiator && initiator.isLeader;
+        const isSelf = initiatorId === memberId;
+
+        if (req.isLeader !== undefined && !isLeader) {
+            return false;
+        }
+        if (req.isObserver !== undefined || req.team !== undefined) {
+            if (party.isLocked ? !isLeader : !(isSelf || isLeader)) {
+                return false;
+            }
+        }
+        if (req.isReady !== undefined && !isSelf) {
+            return false;
+        }
+        if (req.kick && !(isSelf || isLeader)) {
+            return false;
+        }
+        return true;
+    }
+
+    private startPartyIfReady(party: Party) {
+        const relevant = Array.from(party.members.values()).filter(m => !m.isObserver);
+        if (relevant.length === 0) {
+            return;
+        }
+        const ready = relevant.filter(m => m.ready);
+
+        if (party.waitForPlayers) {
+            // Wait until everybody who wants to play is ready, then drop them
+            // all into one game together.
+            const required = Math.min(relevant.length, this.config.maxPlayers);
+            if (ready.length < required) {
+                return;
+            }
+            this.assignPartyToGame(party, ready);
+        } else {
+            // Open mode: each ready player joins a matchmade game immediately.
+            for (const member of ready) {
+                this.joinPartyMemberMatchmade(party, member);
+                member.ready = false;
+            }
+        }
+        this.emitParty(party);
+    }
+
+    private assignPartyToGame(party: Party, ready: PartyMember[]) {
+        const room = this.getOrCreateRoom(party.roomId);
+        const game = this.createGame(room, 'assigned-party');
+
+        const heroTeams: number[][] = [];
+        const teamLookup = new Map<number, number[]>();
+
+        for (const member of ready) {
+            const conn = this.conns.get(member.connId);
+            if (!conn) {
+                continue;
+            }
+            const heroId = this.addPlayerToGame(conn, game, this.memberToJoinMsg(party, member), false, member.team ?? null);
+            member.ready = false;
+            if (heroId !== null && member.team != null) {
+                const list = teamLookup.get(member.team) || [];
+                list.push(heroId);
+                teamLookup.set(member.team, list);
+            }
+        }
+
+        for (const list of teamLookup.values()) {
+            if (list.length > 0) {
+                heroTeams.push(list);
+            }
+        }
+        if (heroTeams.length > 0) {
+            game.controlMessages.push({ type: 'teams', teams: heroTeams });
+        }
+
+        // Optionally top up the party game with bots (MIN_BOTS/MAX_BOTS env;
+        // default 0/0 = pure friends, no bots).
+        this.fillBots(game, 0);
+
+        this.ensureTickLoop();
+    }
+
+    private joinPartyMemberMatchmade(party: Party, member: PartyMember) {
+        const conn = this.conns.get(member.connId);
+        if (!conn) {
+            return;
+        }
+        const room = this.getOrCreateRoom(party.roomId);
+        let game = this.findJoinableGame(room.id, {});
+        if (!game) {
+            game = this.createGame(room);
+        }
+        this.addPlayerToGame(conn, game, this.memberToJoinMsg(party, member), false, member.team ?? null);
+        this.ensureTickLoop();
+    }
+
+    private memberToJoinMsg(party: Party, member: PartyMember): JoinMsg {
+        return {
+            room: party.roomId,
+            name: member.name,
+            keyBindings: member.keyBindings,
+            isMobile: member.isMobile,
+            numGames: member.numGames,
+            partyId: party.id,
+        };
+    }
+
+    private emitParty(party: Party) {
+        const msg = this.partyToMsg(party);
+        for (const connId of party.members.keys()) {
+            this.conns.get(connId)?.send('party', msg);
+        }
+    }
+
+    private partyToMsg(party: Party): PartyMsg {
+        const members: PartyMemberMsg[] = [];
+        party.members.forEach(m => {
+            members.push({
+                socketId: m.connId,
+                name: m.name,
+                ready: m.ready,
+                isObserver: m.isObserver,
+                isLeader: m.isLeader,
+                team: m.team,
+            });
+        });
+        return {
+            partyId: party.id,
+            roomId: party.roomId,
+            members,
+            isLocked: party.isLocked,
+            initialObserver: party.initialObserver,
+            waitForPlayers: party.waitForPlayers,
+        };
     }
 
     // ----- Leave -----------------------------------------------------------
