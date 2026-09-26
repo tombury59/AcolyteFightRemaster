@@ -76,10 +76,6 @@ class HomePanel extends React.PureComponent<Props, State> {
                 {!a.noPartyLink && <PartyList />}
                 <div className="spacer" />
                 <div style={{ flexGrow: 0.1 }} />
-                {!a.noExternalLinks && <div className="more-io-games">
-                    <a href="https://iogames.space">More .io Games</a>
-                </div>}
-                {!a.noExternalLinks && <SocialBar />}
             </div>
             <div className="page" ref={(elem) => this.belowFoldElem = elem}>
                 <h1>Welcome Acolyte!</h1>
@@ -89,7 +85,6 @@ class HomePanel extends React.PureComponent<Props, State> {
                 </p>
                 <h2>Your Name</h2>
                 <NameConfig />
-                <BannerAdRow width={728} height={90} />
                 <SpellBtnConfig />
                 <h1>More Settings</h1>
                 <p className="view-more-ad">Go to <Link page="settings">Settings</Link> for more settings</p>

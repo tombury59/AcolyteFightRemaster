@@ -48,8 +48,6 @@ export class AboutSection extends React.PureComponent<Props, State> {
                 In this arena, you'll find others just like you. Will you be the last one standing?
             </p>
             {this.renderRules()}
-            {this.renderCommunity()}
-            {this.renderRating()}
             {this.renderFAQ()}
             {this.renderCredits()}
             <PrivacyPolicyPanel />

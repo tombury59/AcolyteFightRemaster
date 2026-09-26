@@ -34,7 +34,6 @@ class FinishedPanel extends React.PureComponent<Props> {
     render() {
         const finishedDialog = this.renderNotification();
         return <>
-            {finishedDialog && this.renderDiscordAd()}
             {finishedDialog}
         </>
     }
