@@ -2,7 +2,9 @@ import * as m from '../../shared/messages.model';
 import * as w from '../../game/world.model';
 import * as messages from './messages';
 import * as StoreProvider from '../storeProvider';
+import * as url from '../url';
 import { createLocalSocket } from './localServer';
+import { createRemoteSocket } from './remoteServer';
 
 let currentSocket: any = null;
 
@@ -37,9 +39,12 @@ export function connect(
 	authToken: string): Promise<any> {
 
 	return new Promise<any>((resolve, reject) => {
-		// Offline solo: use the in-browser local game host instead of a real
-		// socket.io connection. See localServer.tsx.
-		const socket: any = createLocalSocket();
+		// Pick the transport: online multiplayer via the relay server when a
+		// server URL is configured, otherwise the solo in-browser loopback.
+		// Both expose the same socket.io-like API, so the code below is shared.
+		const socket: any = url.online
+			? createRemoteSocket(url.serverUrl)
+			: createLocalSocket();
 
 		let alreadyConnected = false;
 		let serverInstanceId: string = null;

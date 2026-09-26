@@ -4,11 +4,18 @@ import * as s from './store.model';
 export const baseUrl = (window as any).baseUrl;
 export const base = baseUrl || "";
 
-// No backend configured => offline mode (solo vs bots). Network calls to the
-// REST API are skipped. When a server is configured (window.baseUrl set), this
-// becomes false and networking re-enables. See localServer.tsx for the offline
-// game host.
+// No REST backend configured => offline mode (no cloud/rankings/replays REST).
+// These features were removed for friends-only play, so this stays true unless
+// a full REST backend (window.baseUrl) is ever wired back up.
 export const offline = !baseUrl;
+
+// Multiplayer relay (WebSocket) URL. Independent of the REST backend above:
+// when set, friends play online via the relay server (see remoteServer.tsx);
+// when empty, the client uses the solo in-browser loopback (localServer.tsx).
+// Configure at build time with VITE_SERVER_URL, or at runtime via window.serverUrl.
+export const serverUrl: string =
+    (import.meta as any).env?.VITE_SERVER_URL || (window as any).serverUrl || "";
+export const online = !!serverUrl;
 
 export function parseLocation(location: Location): s.PathElements {
     let path: string = null;

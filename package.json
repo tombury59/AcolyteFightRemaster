@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:online": "VITE_SERVER_URL=ws://localhost:7770 vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "server": "npm --prefix server run dev",
+    "server:start": "npm --prefix server start"
   },
   "author": "",
   "license": "ISC",
