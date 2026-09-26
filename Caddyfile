@@ -1,5 +1,5 @@
-# Remplace ton-domaine.com par ton vrai domaine (le DNS doit pointer vers le VPS).
 # Caddy gere le HTTPS (Let's Encrypt) ET l'upgrade WebSocket automatiquement.
-ton-domaine.com {
+# Le pare-feu du fournisseur doit autoriser 80 et 443 en entree (c'est le cas).
+tom-bury.angers.mds-project.fr {
 	reverse_proxy acolyte:7770
 }
